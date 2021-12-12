@@ -1,15 +1,20 @@
 [submodule "panda"]
 	path = panda
 	url = ../../budney/panda.git
+    branch = budney-experimental
 [submodule "opendbc"]
 	path = opendbc
 	url = ../../budney/opendbc.git
+    branch = budney-experimental
 [submodule "laika_repo"]
 	path = laika_repo
 	url = ../../budney/laika.git
+    branch = budney-experimental
 [submodule "cereal"]
 	path = cereal
 	url = ../../budney/cereal.git
+    branch = budney-experimental
 [submodule "rednose_repo"]
 	path = rednose_repo
 	url = ../../budney/rednose.git
+    branch = budney-experimental

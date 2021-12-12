@@ -95,6 +95,7 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"CompletedTrainingVersion", PERSISTENT},
     {"ControlsReady", CLEAR_ON_MANAGER_START | CLEAR_ON_PANDA_DISCONNECT | CLEAR_ON_IGNITION_ON},
     {"CurrentRoute", CLEAR_ON_MANAGER_START | CLEAR_ON_IGNITION_ON},
+    {"DisableDisengageOnGasToggle", PERSISTENT},
     {"DisablePowerDown", PERSISTENT},
     {"DisableRadar_Allow", PERSISTENT},
     {"DisableRadar", PERSISTENT}, // WARNING: THIS DISABLES AEB
@@ -134,6 +135,7 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"LastUpdateException", PERSISTENT},
     {"LastUpdateTime", PERSISTENT},
     {"LiveParameters", PERSISTENT},
+    {"ManualParkingBrakeSNGToggle", PERSISTENT},
     {"NavDestination", CLEAR_ON_MANAGER_START | CLEAR_ON_IGNITION_OFF},
     {"NavSettingTime24h", PERSISTENT},
     {"NavdRender", PERSISTENT},
