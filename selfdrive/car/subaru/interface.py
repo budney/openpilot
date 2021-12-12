@@ -43,15 +43,14 @@ class CarInterface(CarInterfaceBase):
       ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.0025, 0.1], [0.00025, 0.01]]
 
     if candidate == CAR.IMPREZA:
-      ret.safetyConfigs[0].safetyParam = 2 # increase limit for crosstrek
-      ret.mass = 1973. + STD_CARGO_KG
-      ret.wheelbase = 2.66
+      ret.mass = 1568. + STD_CARGO_KG
+      ret.wheelbase = 2.67
       ret.centerToFront = ret.wheelbase * 0.5
-      ret.steerRatio = 13
-      ret.steerActuatorDelay = 0.0   # end-to-end angle controller
-      ret.lateralTuning.pid.kf = 0.00018
-      ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[9., 32.], [9., 32.]]
-      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.2, 0.6], [0.1, 0.3]]
+      ret.steerRatio = 15
+      ret.steerActuatorDelay = 0.4   # end-to-end angle controller
+      ret.lateralTuning.pid.kf = 0.00005
+      ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0., 20.], [0., 20.]]
+      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.2, 0.3], [0.02, 0.03]]
 
     if candidate == CAR.IMPREZA_2020:
       ret.safetyConfigs[0].safetyParam = 1 # lower max_steer for 2020
