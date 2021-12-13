@@ -42,15 +42,17 @@ class CarState(CarStateBase):
     )
 
     if self.car_fingerprint == CAR.OUTBACK:
-      ret.wheelSpeeds.fl = cp_body.vl["Wheel_Speeds"]["FL"] * CV.KPH_TO_MS
-      ret.wheelSpeeds.fr = cp_body.vl["Wheel_Speeds"]["FR"] * CV.KPH_TO_MS
-      ret.wheelSpeeds.rl = cp_body.vl["Wheel_Speeds"]["RL"] * CV.KPH_TO_MS
-      ret.wheelSpeeds.rr = cp_body.vl["Wheel_Speeds"]["RR"] * CV.KPH_TO_MS
+      ret.wheelSpeeds = self.get_wheel_speeds(
+        cp_body.vl["Wheel_Speeds"]["FL"],
+        cp_body.vl["Wheel_Speeds"]["FR"],
+        cp_body.vl["Wheel_Speeds"]["RL"],
+        cp_body.vl["Wheel_Speeds"]["RR"], )
     else:
-      ret.wheelSpeeds.fl = cp.vl["Wheel_Speeds"]["FL"] * CV.KPH_TO_MS
-      ret.wheelSpeeds.fr = cp.vl["Wheel_Speeds"]["FR"] * CV.KPH_TO_MS
-      ret.wheelSpeeds.rl = cp.vl["Wheel_Speeds"]["RL"] * CV.KPH_TO_MS
-      ret.wheelSpeeds.rr = cp.vl["Wheel_Speeds"]["RR"] * CV.KPH_TO_MS
+      ret.wheelSpeeds = self.get_wheel_speeds(
+        cp.vl["Wheel_Speeds"]["FL"],
+        cp.vl["Wheel_Speeds"]["FR"],
+        cp.vl["Wheel_Speeds"]["RL"],
+        cp.vl["Wheel_Speeds"]["RR"], )
 
     ret.vEgoRaw = (ret.wheelSpeeds.fl + ret.wheelSpeeds.fr + ret.wheelSpeeds.rl + ret.wheelSpeeds.rr) / 4.
     # Kalman filter, even though Subaru raw wheel speed is heaviliy filtered by default
