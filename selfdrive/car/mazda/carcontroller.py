@@ -13,6 +13,9 @@ class CarController():
     self.steer_rate_limited = False
     self.brake_counter = 0
 
+  def get_last_output(self):
+    return self.apply_steer_last / CarControllerParams.STEER_MAX
+    
   def update(self, c, CS, frame):
     can_sends = []
 
