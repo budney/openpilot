@@ -1,0 +1,41 @@
+---
+config:
+    - &clockeness
+      name: clockeness
+      source: clockeness/comma3
+      dest: origin/clockeness
+      type: pull
+    - &subaru-community
+      name: subaru-community
+      source: martinl/subaru-community
+      dest: origin/subaru-community
+      type: pull
+    - &commaai
+      name: master
+      source: commaai/master
+      dest: origin/master
+      type: merge
+modules:
+  openpilot:
+    path: .
+    branches: &all
+      - *clockeness
+      - *subaru-community
+      - *commaai
+  panda:
+    path: panda
+    branches: *all
+  cereal:
+    path: cereal
+    branches: *all
+  opendbc:
+    path: opendbc
+    branches: *all
+  laika:
+    path: laika_repo
+    branches:
+      - *commaai
+  rednose:
+    path: rednose_repo
+    branches:
+      - *commaai
