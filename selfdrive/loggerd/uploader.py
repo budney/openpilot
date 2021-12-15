@@ -60,10 +60,6 @@ class Uploader():
     self.last_resp = None
     self.last_exc = None
 
-    self.raw_size = 0
-    self.raw_count = 0
-    self.high_size = 0
-    self.high_count = 0
     self.immediate_size = 0
     self.immediate_count = 0
 
@@ -71,20 +67,13 @@ class Uploader():
     self.last_time = 0
     self.last_speed = 0
     self.last_filename = ""
-    
-    self.immediate_folders = []
-    self.high_folders = ["crash/", "boot/"]
-    self.immediate_priority = {}
-    self.high_priority = {"qlog.bz2": 0, "qcamera.ts": 1}
-    self.raw_priority = {"rlog.bz2": 0, "fcamera.hevc": 1, "dcamera.hevc": 2, "ecamera.hevc": 3}
+
+    self.immediate_folders = ["crash/", "boot/"]
+    self.immediate_priority = {"qlog.bz2": 0, "qcamera.ts": 1}
 
   def get_upload_sort(self, name):
     if name in self.immediate_priority:
       return self.immediate_priority[name]
-    if name in self.high_priority:
-      return self.high_priority[name] + 100
-    if name in self.raw_priority:
-      return self.raw_priority[name] + 200
     return 1000
 
   def list_upload_files(self):
@@ -120,40 +109,21 @@ class Uploader():
           if name in self.immediate_priority:
             self.immediate_count += 1
             self.immediate_size += os.path.getsize(fn)
-          elif name in self.high_priority:
-            self.high_count += 1
-            self.high_size += os.path.getsize(fn)
-          else:
-            self.raw_count += 1
-            self.raw_size += os.path.getsize(fn)
         except OSError:
           pass
 
         yield (name, key, fn)
 
-  def next_file_to_upload(self, with_high, with_raw):
+  def next_file_to_upload(self):
     upload_files = list(self.list_upload_files())
 
     for name, key, fn in upload_files:
       if any(f in fn for f in self.immediate_folders):
         return (key, fn)
 
-    if with_high:
-       # then upload the high priority log files
-      for name, key, fn in upload_files:
-        if name in self.high_priority  or any(f in fn for f in self.high_folders):
-          return (key, fn)
-
-    if with_raw:
-      # then upload the full log files, rear and front camera files
-      for name, key, fn in upload_files:
-        if name in self.raw_priority:
-          return (key, fn)
-
-      # then upload other files
-      for name, key, fn in upload_files:
-        if not name.endswith('.lock') and not name.endswith(".tmp"):
-          return (key, fn)
+    for name, key, fn in upload_files:
+      if name in self.immediate_priority:
+        return (key, fn)
 
     return None
 
@@ -270,10 +240,7 @@ def uploader_fn(exit_event):
         time.sleep(60 if offroad else 5)
       continue
 
-    good_internet = network_type in [NetworkType.wifi, NetworkType.ethernet]
-    allow_raw_upload = params.get_bool("UploadRaw")
-
-    d = uploader.next_file_to_upload(with_high=good_internet and offroad, with_raw=allow_raw_upload and good_internet and offroad)
+    d = uploader.next_file_to_upload()
     if d is None:  # Nothing to upload
       if allow_sleep:
         time.sleep(60 if offroad else 5)
