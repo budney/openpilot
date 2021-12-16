@@ -168,7 +168,7 @@ class CarState(CarStateBase):
      ]
 
     # CruiseControl is on can1 for OUTBACK and not used for CROSSTREK_2020H
-    if CP.carFingerprint not in [CAR.OUTBACK, CAR.CROSSTREK_2020H]:
+    if CP.carFingerprint not in (CAR.OUTBACK, CAR.CROSSTREK_2020H):
       signals += [
         ("Cruise_On", "CruiseControl", 0),
         ("Cruise_Activated", "CruiseControl", 0),
@@ -201,11 +201,11 @@ class CarState(CarStateBase):
         ("Steering", 50),
       ]
 
-      if CP.carFingerprint in [CAR.FORESTER_PREGLOBAL, CAR.LEVORG_PREGLOBAL, CAR.WRX_PREGLOBAL]:
+      if CP.carFingerprint in (CAR.FORESTER_PREGLOBAL, CAR.LEVORG_PREGLOBAL, CAR.WRX_PREGLOBAL):
         checks += [
           ("Dashlights", 20),
         ]
-      elif CP.carFingerprint in [CAR.LEGACY_PREGLOBAL, CAR.LEGACY_PREGLOBAL_2018, CAR.OUTBACK_PREGLOBAL, CAR.OUTBACK_PREGLOBAL_2018]:
+      elif CP.carFingerprint in (CAR.LEGACY_PREGLOBAL, CAR.LEGACY_PREGLOBAL_2018, CAR.OUTBACK_PREGLOBAL, CAR.OUTBACK_PREGLOBAL_2018):
         checks += [
           ("Dashlights", 10),
         ]
@@ -250,7 +250,7 @@ class CarState(CarStateBase):
         ]
 
       # CruiseControl is on can1 for OUTBACK and nod used for CROSSTREK_2020H
-      if CP.carFingerprint not in [CAR.OUTBACK, CAR.CROSSTREK_2020H]:
+      if CP.carFingerprint not in (CAR.OUTBACK, CAR.CROSSTREK_2020H):
         checks += [
           ("CruiseControl", 20),
         ]
@@ -396,7 +396,7 @@ class CarState(CarStateBase):
         ("ES_LKAS_State", 10),
       ]
 
-      if CP.carFingerprint not in [CAR.CROSSTREK_2020H, CAR.OUTBACK]:
+      if CP.carFingerprint not in (CAR.CROSSTREK_2020H, CAR.OUTBACK):
         signals += [
           ("Counter", "ES_Distance", 0),
           ("Signal1", "ES_Distance", 0),
