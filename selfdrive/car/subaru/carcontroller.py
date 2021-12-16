@@ -159,4 +159,7 @@ class CarController():
          can_sends.append(subarucan.create_brake_pedal(self.packer, CS.brake_pedal_msg, speed_cmd, pcm_cancel_cmd))
          self.brake_pedal_cnt = CS.brake_pedal_msg["Counter"]
 
-    return can_sends
+    new_actuators = actuators.copy()
+    new_actuators.steer = self.apply_steer_last / self.p.STEER_MAX
+
+    return new_actuators, can_sends
