@@ -98,6 +98,7 @@ HUDData = namedtuple("HUDData",
 
 class CarController():
   def __init__(self, dbc_name, CP, VM):
+    self.apply_steer_last = 0.
     self.braking = False
     self.brake_steady = 0.
     self.brake_last = 0.
@@ -111,7 +112,10 @@ class CarController():
     self.brake = 0
 
     self.params = CarControllerParams(CP)
-
+    
+  def get_last_output(self):
+    return -self.apply_steer_last / self.params.STEER_MAX
+    
   def update(self, enabled, active, CS, frame, actuators, pcm_cancel_cmd,
              hud_v_cruise, hud_show_lanes, hud_show_car, hud_alert):
 
@@ -153,6 +157,8 @@ class CarController():
     apply_steer = int(interp(-actuators.steer * P.STEER_MAX, P.STEER_LOOKUP_BP, P.STEER_LOOKUP_V))
 
     lkas_active = enabled and not CS.steer_not_allowed
+
+    self.appy_steer_last = apply_steer
 
     # Send CAN commands.
     can_sends = []

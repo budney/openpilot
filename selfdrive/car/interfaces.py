@@ -84,6 +84,9 @@ class CarInterfaceBase(ABC):
     ret.minSteerSpeed = 0.
     ret.wheelSpeedFactor = 1.0
 
+    ret.lateralTuning.pid.kdBP = [0.]
+    ret.lateralTuning.pid.kdV = [0.]
+
     ret.pcmCruise = True     # openpilot's state is tied to the PCM's cruise state on most cars
     ret.minEnableSpeed = -1. # enable is done by stock ACC, so ignore this
     ret.steerRatioRear = 0.  # no rear steering, at least on the listed cars aboveA
@@ -105,6 +108,12 @@ class CarInterfaceBase(ABC):
     ret.longitudinalActuatorDelayUpperBound = 0.15
     return ret
 
+  def calc_last_outputs(self, request):
+    lat_out = request
+    if hasattr(self.CC, 'get_last_output'):
+      lat_out = self.CC.get_last_output()
+    return lat_out
+    
   @abstractmethod
   def update(self, c: car.CarControl, can_strings: List[bytes]) -> car.CarState:
     pass

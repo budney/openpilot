@@ -22,6 +22,9 @@ class CarController():
     self.gas = 0
     self.accel = 0
 
+  def get_last_output(self):
+    return self.last_steer / CarControllerParams.STEER_MAX
+
   def update(self, enabled, active, CS, frame, actuators, pcm_cancel_cmd, hud_alert,
              left_line, right_line, lead, left_lane_depart, right_lane_depart):
 
