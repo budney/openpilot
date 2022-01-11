@@ -1,3 +1,13 @@
+2021-12-28
+==========
+* FPv2 updates
+  * 2017 Impreza 2.0 - UDM / @prlifestyle93
+
+2021-12-17
+==========
+* FPv2 updates
+  * 2019 Forester - UDM / @Patienc3
+
 2021-12-16
 ==========
 * Merge upstream (0.8.12) / @martinl
