@@ -648,7 +648,6 @@ FW_VERSIONS = {
       b'\x7a\xc0\x0c\x00',
       b'z\xc0\b\x00',
       b'\x8a\xc0\x00\x00',
-      b'z\xc0\x04\x00',
       b'z\xc0\x00\x00',
       b'\x8a\xc0\x10\x00',
     ],
