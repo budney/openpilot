@@ -143,9 +143,6 @@ def manager_thread() -> None:
     sm.update()
     not_run = ignore[:]
 
-    if sm['deviceState'].freeSpacePercent < 5:
-      not_run.append("loggerd")
-
     started = sm['deviceState'].started
     driverview = params.get_bool("IsDriverViewEnabled")
     ensure_running(managed_processes.values(), started, driverview, not_run)
@@ -171,8 +168,9 @@ def manager_thread() -> None:
     shutdown = False
     for param in ("DoUninstall", "DoShutdown", "DoReboot"):
       if params.get_bool(param):
-        cloudlog.warning(f"Shutting down manager - {param} set")
         shutdown = True
+        params.put("LastManagerExitReason", param)
+        cloudlog.warning(f"Shutting down manager - {param} set")
 
     if shutdown:
       break

@@ -48,7 +48,9 @@ def launcher(proc: str, name: str) -> None:
     raise
 
 
-def nativelauncher(pargs: List[str], cwd: str) -> None:
+def nativelauncher(pargs: List[str], cwd: str, name: str) -> None:
+  os.environ['MANAGER_DAEMON'] = name
+
   # exec the process
   os.chdir(cwd)
   os.execvp(pargs[0], pargs)
@@ -67,6 +69,7 @@ class ManagerProcess(ABC):
   daemon = False
   sigkill = False
   persistent = False
+  driverview = False
   proc: Optional[Process] = None
   enabled = True
   name = ""
@@ -202,7 +205,7 @@ class NativeProcess(ManagerProcess):
 
     cwd = os.path.join(BASEDIR, self.cwd)
     cloudlog.info(f"starting process {self.name}")
-    self.proc = Process(name=self.name, target=nativelauncher, args=(self.cmdline, cwd))
+    self.proc = Process(name=self.name, target=nativelauncher, args=(self.cmdline, cwd, self.name))
     self.proc.start()
     self.watchdog_seen = False
     self.shutting_down = False
@@ -291,8 +294,7 @@ def ensure_running(procs: ValuesView[ManagerProcess], started: bool, driverview:
       p.stop(block=False)
     elif p.persistent:
       p.start()
-    elif getattr(p, 'driverview', False) and driverview:
-      # TODO: why is driverview an argument here? can this be done with the name?
+    elif p.driverview and driverview:
       p.start()
     elif started:
       p.start()

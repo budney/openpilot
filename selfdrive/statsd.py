@@ -44,8 +44,8 @@ class StatLog:
 def main():
   def get_influxdb_line(measurement: str, value: float, timestamp: datetime, tags: dict):
     res = f"{measurement}"
-    for tag_key in tags.keys():
-      res += f",{tag_key}={str(tags[tag_key])}"
+    for k, v in tags.items():
+      res += f",{k}={str(v)}"
     res += f" value={value} {int(timestamp.timestamp() * 1e9)}\n"
     return res
 
@@ -74,24 +74,26 @@ def main():
   last_flush_time = time.monotonic()
   gauges = {}
   while True:
-    try:
-      metric = sock.recv_string(zmq.NOBLOCK)
-      try:
-        metric_type = metric.split('|')[1]
-        metric_name = metric.split(':')[0]
-        metric_value = metric.split('|')[0].split(':')[1]
-
-        if metric_type == METRIC_TYPE.GAUGE:
-          gauges[metric_name] = metric_value
-        else:
-          cloudlog.event("unknown metric type", metric_type=metric_type)
-      except Exception:
-        cloudlog.event("malformed metric", metric=metric)
-    except zmq.error.Again:
-      time.sleep(1e-3)
-
     started_prev = sm['deviceState'].started
-    sm.update(0)
+    sm.update()
+
+    # Update metrics
+    while True:
+      try:
+        metric = sock.recv_string(zmq.NOBLOCK)
+        try:
+          metric_type = metric.split('|')[1]
+          metric_name = metric.split(':')[0]
+          metric_value = metric.split('|')[0].split(':')[1]
+
+          if metric_type == METRIC_TYPE.GAUGE:
+            gauges[metric_name] = metric_value
+          else:
+            cloudlog.event("unknown metric type", metric_type=metric_type)
+        except Exception:
+          cloudlog.event("malformed metric", metric=metric)
+      except zmq.error.Again:
+        break
 
     # flush when started state changes or after FLUSH_TIME_S
     if (time.monotonic() > last_flush_time + STATS_FLUSH_TIME_S) or (sm['deviceState'].started != started_prev):
@@ -99,7 +101,7 @@ def main():
       current_time = datetime.utcnow().replace(tzinfo=timezone.utc)
       tags['started'] = sm['deviceState'].started
 
-      for gauge_key in gauges.keys():
+      for gauge_key in gauges:
         result += get_influxdb_line(f"gauge.{gauge_key}", gauges[gauge_key], current_time, tags)
 
       # clear intermediate data
