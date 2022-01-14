@@ -29,7 +29,7 @@ bool compare_by_strength(const Network &a, const Network &b) {
   return a.strength > b.strength;
 }
 
-WifiManager::WifiManager(QWidget* parent) : QWidget(parent) {
+WifiManager::WifiManager(QObject *parent) : QObject(parent) {
   qDBusRegisterMetaType<Connection>();
   qDBusRegisterMetaType<IpConfig>();
   connecting_to_network = "";
@@ -47,13 +47,7 @@ WifiManager::WifiManager(QWidget* parent) : QWidget(parent) {
     bus.connect(NM_DBUS_SERVICE, NM_DBUS_PATH, NM_DBUS_INTERFACE, "DeviceAdded", this, SLOT(deviceAdded(QDBusObjectPath)));
   }
 
-  QTimer* timer = new QTimer(this);
-  QObject::connect(timer, &QTimer::timeout, this, [=]() {
-    if (!adapter.isEmpty() && this->isVisible()) {
-      requestScan();
-    }
-  });
-  timer->start(5000);
+  timer.callOnTimeout(this, &WifiManager::requestScan);
 }
 
 void WifiManager::setup() {
@@ -74,10 +68,18 @@ void WifiManager::setup() {
   requestScan();
 }
 
+void WifiManager::start() {
+  timer.start(5000);
+  refreshNetworks();
+}
+
+void WifiManager::stop() {
+  timer.stop();
+}
+
 void WifiManager::refreshNetworks() {
-  if (adapter.isEmpty()) {
-    return;
-  }
+  if (adapter.isEmpty() || !timer.isActive()) return;
+
   seenNetworks.clear();
   ipv4_address = get_ipv4_address();
 
@@ -107,6 +109,7 @@ void WifiManager::refreshNetworks() {
     Network network = {ssid, strength, ctype, security};
     seenNetworks[ssid] = network;
   }
+  emit refreshSignal();
 }
 
 QString WifiManager::get_ipv4_address() {
@@ -161,32 +164,20 @@ SecurityType WifiManager::getSecurityType(const QString &path) {
   }
 }
 
-void WifiManager::connect(const Network &n) {
-  return connect(n, "", "");
-}
-
-void WifiManager::connect(const Network &n, const QString &password) {
-  return connect(n, "", password);
-}
-
-void WifiManager::connect(const Network &n, const QString &username, const QString &password) {
+void WifiManager::connect(const Network &n, const QString &password, const QString &username) {
   connecting_to_network = n.ssid;
-  // disconnect();
-  forgetConnection(n.ssid); //Clear all connections that may already exist to the network we are connecting
-  connect(n.ssid, username, password, n.security_type);
-}
-
-void WifiManager::connect(const QByteArray &ssid, const QString &username, const QString &password, SecurityType security_type) {
+  seenNetworks[n.ssid].connected = ConnectedType::CONNECTING;
+  forgetConnection(n.ssid);  // Clear all connections that may already exist to the network we are connecting
   Connection connection;
   connection["connection"]["type"] = "802-11-wireless";
   connection["connection"]["uuid"] = QUuid::createUuid().toString().remove('{').remove('}');
-  connection["connection"]["id"] = "openpilot connection "+QString::fromStdString(ssid.toStdString());
+  connection["connection"]["id"] = "openpilot connection " + QString::fromStdString(n.ssid.toStdString());
   connection["connection"]["autoconnect-retries"] = 0;
 
-  connection["802-11-wireless"]["ssid"] = ssid;
+  connection["802-11-wireless"]["ssid"] = n.ssid;
   connection["802-11-wireless"]["mode"] = "infrastructure";
 
-  if (security_type == SecurityType::WPA) {
+  if (n.security_type == SecurityType::WPA) {
     connection["802-11-wireless-security"]["key-mgmt"] = "wpa-psk";
     connection["802-11-wireless-security"]["auth-alg"] = "open";
     connection["802-11-wireless-security"]["psk"] = password;
@@ -315,21 +306,14 @@ void WifiManager::stateChange(unsigned int new_state, unsigned int previous_stat
     emit wrongPassword(connecting_to_network);
   } else if (new_state == NM_DEVICE_STATE_ACTIVATED) {
     connecting_to_network = "";
-    if (this->isVisible()) {
-      refreshNetworks();
-      emit refreshSignal();
-    }
+    refreshNetworks();
   }
 }
 
 // https://developer.gnome.org/NetworkManager/stable/gdbus-org.freedesktop.NetworkManager.Device.Wireless.html
 void WifiManager::propertyChange(const QString &interface, const QVariantMap &props, const QStringList &invalidated_props) {
   if (interface == NM_DBUS_INTERFACE_DEVICE_WIRELESS && props.contains("LastScan")) {
-    if (this->isVisible() || firstScan) {
-      refreshNetworks();
-      emit refreshSignal();
-      firstScan = false;
-    }
+    refreshNetworks();
   } else if (interface == NM_DBUS_INTERFACE_DEVICE_WIRELESS && props.contains("ActiveAccessPoint")) {
     const QDBusObjectPath &path = props.value("ActiveAccessPoint").value<QDBusObjectPath>();
     activeAp = path.path();
