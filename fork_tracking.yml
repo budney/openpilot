@@ -1,10 +1,5 @@
 ---
 config:
-    - &clockeness
-      name: clockeness
-      source: clockeness/comma3
-      dest: origin/clockeness
-      type: pull
     - &subaru-community
       name: subaru-community
       source: martinl/subaru-community
@@ -19,7 +14,6 @@ modules:
   openpilot:
     path: .
     branches: &all
-      - *clockeness
       - *subaru-community
       - *commaai
   panda:
