@@ -1,18 +1,18 @@
 [submodule "panda"]
-  path = panda
-  url = ../../commaai/panda.git
+	path = panda
+	url = ../../budney/panda.git
 [submodule "opendbc"]
-  path = opendbc
-  url = ../../commaai/opendbc.git
+	path = opendbc
+	url = ../../budney/opendbc.git
 [submodule "laika_repo"]
-  path = laika_repo
-  url = ../../commaai/laika.git
+	path = laika_repo
+	url = ../../budney/laika.git
 [submodule "cereal"]
-  path = cereal
-  url = ../../commaai/cereal.git
+	path = cereal
+	url = ../../budney/cereal.git
 [submodule "rednose_repo"]
-  path = rednose_repo
-  url = ../../commaai/rednose.git
+	path = rednose_repo
+	url = ../../budney/rednose.git
 [submodule "body"]
-  path = body
-  url = ../../commaai/body.git
+	path = body
+	url = ../../commaai/body.git
