@@ -1,18 +1,15 @@
 [submodule "panda"]
 	path = panda
-	url = ../../martinl/panda.git
-	branch = subaru-community
+	url = ../../budney/panda.git
 [submodule "opendbc"]
 	path = opendbc
-	url = ../../martinl/opendbc.git
-	branch = subaru-community
+	url = ../../budney/opendbc.git
 [submodule "laika_repo"]
 	path = laika_repo
-	url = ../../commaai/laika.git
+	url = ../../budney/laika.git
 [submodule "cereal"]
 	path = cereal
-	url = ../../martinl/cereal.git
-	branch = subaru-community
+	url = ../../budney/cereal.git
 [submodule "rednose_repo"]
 	path = rednose_repo
-	url = ../../commaai/rednose.git
+	url = ../../budney/rednose.git
