@@ -27,14 +27,14 @@ class CarState(CarStateBase):
     ret.gasPressed = ret.gas > 1e-5
     if self.car_fingerprint in PREGLOBAL_CARS:
       ret.brakePressed = cp.vl["Brake_Pedal"]["Brake_Pedal"] > 2
-    elif self.car_fingerprint == CAR.OUTBACK:
+    elif self.car_fingerprint in [CAR.OUTBACK, CAR.LEGACY]:
       ret.brakePressed = cp_body.vl["Brake_Status"]["Brake"] == 1
     elif self.car_fingerprint == CAR.CROSSTREK_2020H:
       ret.brakePressed = cp_body.vl["Brake_Hybrid"]["Brake"] == 1
     else:
       ret.brakePressed = cp.vl["Brake_Status"]["Brake"] == 1
 
-    if self.car_fingerprint == CAR.OUTBACK:
+    if self.car_fingerprint in [CAR.OUTBACK, CAR.LEGACY]:
       ret.wheelSpeeds = self.get_wheel_speeds(
         cp_body.vl["Wheel_Speeds"]["FL"],
         cp_body.vl["Wheel_Speeds"]["FR"],
@@ -74,7 +74,7 @@ class CarState(CarStateBase):
     ret.steeringTorque = cp.vl["Steering_Torque"]["Steer_Torque_Sensor"]
     ret.steeringPressed = abs(ret.steeringTorque) > STEER_THRESHOLD[self.car_fingerprint]
 
-    if self.car_fingerprint == CAR.OUTBACK:
+    if self.car_fingerprint in [CAR.OUTBACK, CAR.LEGACY]:
       ret.cruiseState.enabled = cp_body.vl["CruiseControl"]["Cruise_Activated"] != 0
       ret.cruiseState.available = cp_body.vl["CruiseControl"]["Cruise_On"] != 0
     elif self.car_fingerprint == CAR.CROSSTREK_2020H:
@@ -109,7 +109,7 @@ class CarState(CarStateBase):
       self.cruise_state = cp_cam.vl["ES_DashStatus"]["Cruise_State"]
       self.brake_pedal_msg = copy.copy(cp.vl["Brake_Pedal"])
       self.es_lkas_msg = copy.copy(cp_cam.vl["ES_LKAS_State"])
-      if self.car_fingerprint == CAR.OUTBACK:
+      if self.car_fingerprint in [CAR.OUTBACK, CAR.LEGACY]:
         self.car_follow = cp_body.vl["ES_Distance"]["Car_Follow"]
         self.close_distance = cp_body.vl["ES_Distance"]["Close_Distance"]
       # FIXME: find ES_Distance signals for CROSSTREK_2020H
@@ -145,7 +145,7 @@ class CarState(CarStateBase):
     ]
 
     # Wheel_Speeds is on can1 for OUTBACK
-    if CP.carFingerprint != CAR.OUTBACK:
+    if CP.carFingerprint not in [CAR.OUTBACK, CAR.LEGACY]:
       signals += [
         ("FL", "Wheel_Speeds", 0),
         ("FR", "Wheel_Speeds", 0),
@@ -160,7 +160,7 @@ class CarState(CarStateBase):
       checks.append(("Transmission", 100))
 
     # CruiseControl is on can1 for OUTBACK and not used for CROSSTREK_2020H
-    if CP.carFingerprint not in [CAR.OUTBACK, CAR.CROSSTREK_2020H]:
+    if CP.carFingerprint not in [CAR.OUTBACK, CAR.LEGACY, CAR.CROSSTREK_2020H]:
       signals.append(("Cruise_On", "CruiseControl", 0))
       signals.append(("Cruise_Activated", "CruiseControl", 0))
 
@@ -223,12 +223,12 @@ class CarState(CarStateBase):
       checks.append(("BodyInfo", 10))
 
       # Brake_Status is on can1 for OUTBACK
-      if CP.carFingerprint != CAR.OUTBACK:
+      if CP.carFingerprint not in [CAR.OUTBACK, CAR.LEGACY]:
         signals.append(("Brake", "Brake_Status", 0))
         checks.append(("Brake_Status", 50))
 
       # CruiseControl is on can1 for OUTBACK and nod used for CROSSTREK_2020H
-      if CP.carFingerprint not in [CAR.OUTBACK, CAR.CROSSTREK_2020H]:
+      if CP.carFingerprint not in [CAR.OUTBACK, CAR.LEGACY, CAR.CROSSTREK_2020H]:
         checks.append(("CruiseControl", 20))
 
     if CP.enableBsm:
@@ -263,7 +263,7 @@ class CarState(CarStateBase):
 
       return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, 1)
 
-    elif CP.carFingerprint == CAR.OUTBACK:
+    elif CP.carFingerprint in [CAR.OUTBACK, CAR.LEGACY]:
       signals += [
         ("Cruise_On", "CruiseControl", 0),
         ("Cruise_Activated", "CruiseControl", 0),
@@ -365,7 +365,7 @@ class CarState(CarStateBase):
       checks = [("ES_DashStatus", 10)]
       checks.append(("ES_LKAS_State", 10))
 
-      if CP.carFingerprint not in [CAR.CROSSTREK_2020H, CAR.OUTBACK]:
+      if CP.carFingerprint not in [CAR.CROSSTREK_2020H, CAR.OUTBACK, CAR.LEGACY]:
         signals += [
           ("Counter", "ES_Distance", 0),
           ("Signal1", "ES_Distance", 0),
