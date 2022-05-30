@@ -58,7 +58,7 @@ class CarController():
 
     if CS.CP.carFingerprint in PREGLOBAL_CARS:
       # Initiate the ACC resume sequence if conditions are met
-      if (enabled                                            # ACC active
+      if (c.enabled                                            # ACC active
           and CS.car_follow == 1                             # lead car
           and CS.out.standstill                              # must be standing still
           and CS.close_distance > 3                          # acc resume trigger low threshold
@@ -66,7 +66,7 @@ class CarController():
           and CS.close_distance > self.prev_close_distance): # distance with lead car is increasing
         self.sng_acc_resume = True
       # Cancel ACC if stopped, brake pressed and not stopped behind another car
-      if enabled and CS.out.brakePressed and CS.car_follow == 0 and CS.out.standstill:
+      if c.enabled and CS.out.brakePressed and CS.car_follow == 0 and CS.out.standstill:
         pcm_cancel_cmd = True
     elif CS.CP.carFingerprint in GLOBAL_CARS_SNG:
       if CS.has_epb:
@@ -77,7 +77,7 @@ class CarController():
         if not CS.out.standstill:
           self.manual_hold = False
         # Initiate the ACC resume sequence if conditions are met
-        if (enabled                                            # ACC active
+        if (c.enabled                                            # ACC active
             and not self.manual_hold
             and CS.car_follow == 1                             # lead car
             and CS.cruise_state == 3                           # ACC HOLD (only with EPB)
@@ -86,7 +86,7 @@ class CarController():
             and CS.close_distance > self.prev_close_distance): # distance with lead car is increasing
           self.sng_acc_resume = True
       else:
-          if (enabled                                          # ACC active
+          if (c.enabled                                          # ACC active
               and CS.car_follow == 1                           # lead car
               and CS.out.standstill
               and frame > self.standstill_start + 50):         # standstill for >0.5 second

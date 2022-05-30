@@ -168,14 +168,6 @@ class CarInterface(CarInterfaceBase):
 
     return ret
 
-  # returns a car.CarState
-  def update(self, c, can_strings):
-    self.cp.update_strings(can_strings)
-    self.cp_cam.update_strings(can_strings)
-    if self.cp_body:
-      self.cp_body.update_strings(can_strings)
-    return _update(self, c)
-
   def _update(self, c):
 
     ret = self.CS.update(self.cp, self.cp_cam, self.cp_body)
@@ -186,6 +178,14 @@ class CarInterface(CarInterfaceBase):
     ret.events = self.create_common_events(ret).to_msg()
 
     return ret
+
+  # returns a car.CarState
+  def update(self, c, can_strings):
+    self.cp.update_strings(can_strings)
+    self.cp_cam.update_strings(can_strings)
+    if self.cp_body:
+      self.cp_body.update_strings(can_strings)
+    return self._update(c)
 
   def apply(self, c):
     hud_control = c.hudControl
