@@ -1,5 +1,5 @@
 from cereal import car
-from selfdrive.config import Conversions as CV
+from common.conversions import Conversions as CV
 from opendbc.can.can_define import CANDefine
 from opendbc.can.parser import CANParser
 from selfdrive.car.interfaces import CarStateBase
@@ -72,6 +72,8 @@ class CarState(CarStateBase):
         self.lkas_allowed_speed = True
       elif speed_kph < LKAS_LIMITS.DISABLE_SPEED:
         self.lkas_allowed_speed = False
+    else:
+      self.lkas_allowed_speed = True
 
     # TODO: the signal used for available seems to be the adaptive cruise signal, instead of the main on
     #       it should be used for carState.cruiseState.nonAdaptive instead

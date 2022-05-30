@@ -7,7 +7,7 @@ from cereal import car
 from common.kalman.simple_kalman import KF1D
 from common.realtime import DT_CTRL
 from selfdrive.car import gen_empty_fingerprint
-from selfdrive.config import Conversions as CV
+from common.conversions import Conversions as CV
 from selfdrive.controls.lib.drive_helpers import V_CRUISE_MAX
 from selfdrive.controls.lib.events import Events
 from selfdrive.controls.lib.vehicle_model import VehicleModel
@@ -52,7 +52,7 @@ class CarInterfaceBase(ABC):
 
   @staticmethod
   @abstractmethod
-  def get_params(candidate, fingerprint=gen_empty_fingerprint(), car_fw=None):
+  def get_params(candidate, fingerprint=gen_empty_fingerprint(), car_fw=None, disable_radar=False):
     pass
 
   @staticmethod
@@ -90,7 +90,7 @@ class CarInterfaceBase(ABC):
     ret.stopAccel = -2.0
     ret.stoppingDecelRate = 0.8 # brake_travel/s while trying to stop
     ret.vEgoStopping = 0.5
-    ret.vEgoStarting = 0.5  # needs to be >= vEgoStopping to avoid state transition oscillation
+    ret.vEgoStarting = 0.5
     ret.stoppingControl = True
     ret.longitudinalTuning.deadzoneBP = [0.]
     ret.longitudinalTuning.deadzoneV = [0.]
@@ -141,7 +141,8 @@ class CarInterfaceBase(ABC):
       events.add(EventName.wrongCruiseMode)
     if cs_out.brakeHoldActive and self.CP.openpilotLongitudinalControl:
       events.add(EventName.brakeHold)
-
+    if cs_out.parkingBrake:
+      events.add(EventName.parkBrake)
 
     # Handle permanent and temporary steering faults
     self.steering_unpressed = 0 if cs_out.steeringPressed else self.steering_unpressed + 1
