@@ -78,8 +78,6 @@ class CarInterfaceBase(ABC):
 
     # standard ALC params
     ret.steerControlType = car.CarParams.SteerControlType.torque
-    ret.steerMaxBP = [0.]
-    ret.steerMaxV = [1.]
     ret.minSteerSpeed = 0.
     ret.wheelSpeedFactor = 1.0
 
@@ -130,7 +128,7 @@ class CarInterfaceBase(ABC):
     if cs_out.espDisabled:
       events.add(EventName.espDisabled)
     if cs_out.gasPressed and self.disengage_on_gas:
-      events.add(EventName.gasPressed)
+      events.add(EventName.pedalPressedPreEnable)
     if cs_out.stockFcw:
       events.add(EventName.stockFcw)
     if cs_out.stockAeb:

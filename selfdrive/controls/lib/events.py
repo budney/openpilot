@@ -30,6 +30,7 @@ class Priority(IntEnum):
 class ET:
   ENABLE = 'enable'
   PRE_ENABLE = 'preEnable'
+  OVERRIDE = 'override'
   NO_ENTRY = 'noEntry'
   WARNING = 'warning'
   USER_DISABLE = 'userDisable'
@@ -246,7 +247,7 @@ def no_gps_alert(CP: car.CarParams, sm: messaging.SubMaster, metric: bool, soft_
   gps_integrated = sm['peripheralState'].pandaType in (log.PandaState.PandaType.uno, log.PandaState.PandaType.dos)
   return Alert(
     "Poor GPS reception",
-    "If sky is visible, contact support" if gps_integrated else "Check GPS antenna placement",
+    "Hardware malfunctioning if sky is visible" if gps_integrated else "Check GPS antenna placement",
     AlertStatus.normal, AlertSize.mid,
     Priority.LOWER, VisualAlert.none, AudibleAlert.none, .2, creation_delay=300.)
 
@@ -355,14 +356,6 @@ EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
   },
 
   # ********** events only containing alerts that display while engaged **********
-
-  EventName.gasPressed: {
-    ET.PRE_ENABLE: Alert(
-      "Release Gas Pedal to Engage",
-      "",
-      AlertStatus.normal, AlertSize.small,
-      Priority.LOWEST, VisualAlert.none, AudibleAlert.none, .1, creation_delay=1.),
-  },
 
   # openpilot tries to learn certain parameters about your car by observing
   # how the car behaves to steering inputs from both human and openpilot driving.
@@ -495,24 +488,24 @@ EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
 
   # Thrown when the fan is driven at >50% but is not rotating
   EventName.fanMalfunction: {
-    ET.PERMANENT: NormalPermanentAlert("Fan Malfunction", "Contact Support"),
+    ET.PERMANENT: NormalPermanentAlert("Fan Malfunction", "Likely Hardware Issue"),
   },
 
   # Camera is not outputting frames at a constant framerate
   EventName.cameraMalfunction: {
-    ET.PERMANENT: NormalPermanentAlert("Camera Malfunction", "Contact Support"),
+    ET.PERMANENT: NormalPermanentAlert("Camera Malfunction", "Likely Hardware Issue"),
   },
 
   # Unused
   EventName.gpsMalfunction: {
-    ET.PERMANENT: NormalPermanentAlert("GPS Malfunction", "Contact Support"),
+    ET.PERMANENT: NormalPermanentAlert("GPS Malfunction", "Likely Hardware Issue"),
   },
 
   # When the GPS position and localizer diverge the localizer is reset to the
   # current GPS position. This alert is thrown when the localizer is reset
   # more often than expected.
   EventName.localizerMalfunction: {
-    # ET.PERMANENT: NormalPermanentAlert("Sensor Malfunction", "Contact Support"),
+    # ET.PERMANENT: NormalPermanentAlert("Sensor Malfunction", "Hardware Malfunction"),
   },
 
   # ********** events that affect controls state transitions **********
@@ -547,6 +540,22 @@ EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
     ET.USER_DISABLE: EngagementAlert(AudibleAlert.disengage),
     ET.NO_ENTRY: NoEntryAlert("Pedal Pressed",
                               visual_alert=VisualAlert.brakePressed),
+  },
+
+  EventName.pedalPressedPreEnable: {
+    ET.PRE_ENABLE: Alert(
+      "Release Pedal to Engage",
+      "",
+      AlertStatus.normal, AlertSize.small,
+      Priority.LOWEST, VisualAlert.none, AudibleAlert.none, .1, creation_delay=1.),
+  },
+
+  EventName.gasPressedOverride: {
+    ET.OVERRIDE: Alert(
+      "",
+      "",
+      AlertStatus.normal, AlertSize.none,
+      Priority.LOWEST, VisualAlert.none, AudibleAlert.none, .1),
   },
 
   EventName.wrongCarMode: {

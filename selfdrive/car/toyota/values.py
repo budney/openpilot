@@ -78,8 +78,8 @@ class CAR:
 
 class Footnote(Enum):
   DSU = CarFootnote(
-    "When disconnecting the Driver Support Unit (DSU), openpilot Adaptive Cruise Control (ACC) will replace " +
-    "stock Adaptive Cruise Control (ACC). NOTE: disconnecting the DSU disables Automatic Emergency Braking (AEB).",
+    "When disconnecting the Driver Support Unit (DSU), openpilot Adaptive Cruise Control (ACC) will replace stock " +
+    "Adaptive Cruise Control (ACC). <b><i> NOTE: disconnecting the DSU disables Automatic Emergency Braking (AEB).</i></b>",
     Column.LONGITUDINAL, star=Star.HALF)
   CAMRY = CarFootnote(
     "28mph for Camry 4CYL L, 4CYL LE and 4CYL SE which don't have Full-Speed Range Dynamic Radar Cruise Control.",
@@ -496,6 +496,7 @@ FW_VERSIONS = {
     ],
     (Ecu.fwdRadar, 0x750, 15): [
       b'\x018821F6201200\x00\x00\x00\x00',
+      b'\x018821F6201300\x00\x00\x00\x00',
     ],
     (Ecu.fwdCamera, 0x750, 109): [
       b'\x028646F3305200\x00\x00\x00\x008646G5301200\x00\x00\x00\x00',
@@ -690,6 +691,7 @@ FW_VERSIONS = {
       b'\x03312N6100\x00\x00\x00\x00\x00\x00\x00\x00A0202000\x00\x00\x00\x00\x00\x00\x00\x00895231203302\x00\x00\x00\x00',
       b'\x03312N6100\x00\x00\x00\x00\x00\x00\x00\x00A0202000\x00\x00\x00\x00\x00\x00\x00\x00895231203402\x00\x00\x00\x00',
       b'\x02312K4000\x00\x00\x00\x00\x00\x00\x00\x00A0202000\x00\x00\x00\x00\x00\x00\x00\x00',
+      b'\x02312U5000\x00\x00\x00\x00\x00\x00\x00\x00A0202000\x00\x00\x00\x00\x00\x00\x00\x00',
     ],
     (Ecu.eps, 0x7a1, None): [
       b'\x018965B12350\x00\x00\x00\x00\x00\x00',
@@ -701,7 +703,8 @@ FW_VERSIONS = {
       b'\x018965B1255000\x00\x00\x00\x00',
       b'8965B12361\x00\x00\x00\x00\x00\x00',
       b'8965B16011\x00\x00\x00\x00\x00\x00',
-      b'\x018965B12510\x00\x00\x00\x00\x00\x00'
+      b'\x018965B12510\x00\x00\x00\x00\x00\x00',
+      b'\x018965B1256000\x00\x00\x00\x00',
     ],
     (Ecu.esp, 0x7b0, None): [
       b'\x01F152602280\x00\x00\x00\x00\x00\x00',

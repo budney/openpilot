@@ -112,7 +112,7 @@ def fingerprint(logcan, sendcan):
       if Params().get_bool("FirmwareQueryDelay"):
         time.sleep(10)
       _, vin = get_vin(logcan, sendcan, bus)
-      car_fw = get_fw_versions(logcan, sendcan, bus)
+      car_fw = get_fw_versions(logcan, sendcan)
 
     exact_fw_match, fw_candidates = match_fw_to_car(car_fw)
   else:
