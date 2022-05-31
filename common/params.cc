@@ -1,4 +1,4 @@
-#include "selfdrive/common/params.h"
+#include "common/params.h"
 
 #include <dirent.h>
 #include <sys/file.h>
@@ -6,8 +6,8 @@
 #include <csignal>
 #include <unordered_map>
 
-#include "selfdrive/common/swaglog.h"
-#include "selfdrive/common/util.h"
+#include "common/swaglog.h"
+#include "common/util.h"
 #include "selfdrive/hardware/hw.h"
 
 namespace {
@@ -146,7 +146,6 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"PandaHeartbeatLost", CLEAR_ON_MANAGER_START | CLEAR_ON_IGNITION_OFF},
     {"PandaSignatures", CLEAR_ON_MANAGER_START},
     {"Passive", PERSISTENT},
-    {"PrimeRedirected", PERSISTENT},
     {"PrimeType", PERSISTENT},
     {"RecordFront", PERSISTENT},
     {"RecordFrontLock", PERSISTENT},  // for the internal fleet
