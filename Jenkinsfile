@@ -150,9 +150,9 @@ pipeline {
               }
             }
 
-            stage('Push master-ci') {
+            stage('Push release2-staging') {
               when {
-                branch 'master'
+                branch 'commatwo_master'
               }
               steps {
                 phone_steps("tici-build", [

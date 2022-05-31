@@ -243,6 +243,10 @@ class TestCarModel(unittest.TestCase):
 
       CS_prev = CS
 
+    # Honda Nidec uses button enable in panda, but pcm enable in openpilot
+    if self.CP.carName == "honda" and self.CP.carFingerprint not in HONDA_BOSCH and checks['controlsAllowed'] < 25:
+      checks['controlsAllowed'] = 0
+
     failed_checks = {k: v for k, v in checks.items() if v > 0}
     self.assertFalse(len(failed_checks), f"panda safety doesn't agree with openpilot: {failed_checks}")
 

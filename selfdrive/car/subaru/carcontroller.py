@@ -136,7 +136,7 @@ class CarController():
         self.throttle_cnt = CS.throttle_msg["Counter"]
 
     else:
-      if CS.CP.carFingerprint not in [CAR.CROSSTREK_2020H, CAR.OUTBACK]:
+      if CS.CP.carFingerprint not in [CAR.CROSSTREK_2020H, CAR.OUTBACK, CAR.LEGACY]:
         if self.es_distance_cnt != CS.es_distance_msg["Counter"]:
           can_sends.append(subarucan.create_es_distance(self.packer, CS.es_distance_msg, pcm_cancel_cmd))
           self.es_distance_cnt = CS.es_distance_msg["Counter"]

@@ -10,6 +10,8 @@ class CarControllerParams:
   def __init__(self, CP):
     if CP.carFingerprint == CAR.IMPREZA_2020:
       self.STEER_MAX = 1439
+    elif CP.carFingerprint == CAR.IMPREZA:
+      self.STEER_MAX = 3071
     else:
       self.STEER_MAX = 2047
     self.STEER_STEP = 2                # how often we update the steer cmd
@@ -29,6 +31,7 @@ class CAR:
   CROSSTREK_2020H = "SUBARU CROSSTREK LIMITED 2020 HYBRID"
   FORESTER = "SUBARU FORESTER 2019"
   FORESTER_PREGLOBAL = "SUBARU FORESTER 2017 - 2018"
+  LEGACY = "SUBARU LEGACY 2020"
   LEGACY_PREGLOBAL = "SUBARU LEGACY 2015 - 2017"
   LEGACY_PREGLOBAL_2018 = "SUBARU LEGACY 2018 - 2019"
   LEVORG_PREGLOBAL = "SUBARU LEVORG 2016"
@@ -237,9 +240,12 @@ FW_VERSIONS = {
       b'\xa3 \031\024\000',
       b'\xa3  \x14\x01',
       b'\xf1\x00\xbb\r\x05',
+      b'\xa3  \024\001',
+      b'\xa3 \x19T\x00',
     ],
     (Ecu.eps, 0x746, None): [
       b'\x8d\xc0\x04\x00',
+      b'\x8d\xc2\x00\x00',
     ],
     (Ecu.fwdCamera, 0x787, None): [
       b'\x00\x00e!\x1f@ \x11',
@@ -248,6 +254,7 @@ FW_VERSIONS = {
       b'\xf1\x00\xac\x02\x00',
       b'\x00\x00e!\x00\x00\x00\x00',
       b'\x00\x00e\x97\x00\x00\x00\x00',
+      b'\x00\x00eY\x1f@ !',
     ],
     (Ecu.engine, 0x7e0, None): [
       b'\xb6"`A\x07',
@@ -255,6 +262,7 @@ FW_VERSIONS = {
       b'\xcb\"`@\a',
       b'\xcb\"`p\a',
       b'\xf1\x00\xa2\x10\n',
+      b'\xd2\xa1`r\x07',
     ],
     (Ecu.transmission, 0x7e1, None): [
       b'\032\xf6B0\000',
@@ -263,6 +271,7 @@ FW_VERSIONS = {
       b'\x1a\xf6B`\x00',
       b'\xf1\x00\xa4\x10@',
       b'\x1a\xf6b0\x00',
+      b'\x1b\xa7@a\x00',
     ],
   },
   CAR.FORESTER_PREGLOBAL: {
@@ -292,6 +301,24 @@ FW_VERSIONS = {
       b'\xdc\xf2`\x81\000',
       b'\xdc\xf2`\x80\x00',
       b'\x1a\xf6F`\x00',
+    ],
+  },
+  CAR.LEGACY: {
+    # Ecu, addr, subaddr: ROM ID
+    (Ecu.esp, 0x7b0, None): [
+      b'\xa1\\  x04\x01',
+    ],
+    (Ecu.eps, 0x746, None): [
+      b'\x9b\xc0\x11\x00',
+    ],
+    (Ecu.fwdCamera, 0x787, None): [
+      b'\x00\x00e\x80\x00\x1f@ \x19\x00',
+    ],
+    (Ecu.engine, 0x7e0, None): [
+      b'\xde\"a0\x07',
+    ],
+    (Ecu.transmission, 0x7e1, None): [
+      b'\xa5\xf6\x05@\x00',
     ],
   },
   CAR.LEGACY_PREGLOBAL: {
@@ -327,9 +354,11 @@ FW_VERSIONS = {
   CAR.LEGACY_PREGLOBAL_2018: {
     # 2018 Subaru Legacy 2.5i Premium - UDM / @kram322
     # 2018 Subaru Legacy - UDM / @Hassan
+    # 2018 Subaru Legacy - UDM / @Brycey92
     # Ecu, addr, subaddr: ROM ID
     (Ecu.esp, 0x7b0, None): [
       b'\x8b\x97D\x00',
+      b'\x8b\x9aD\x00',
     ],
     (Ecu.eps, 0x746, None): [
       b'{\xb0\x00\x00',
@@ -341,11 +370,13 @@ FW_VERSIONS = {
     (Ecu.engine, 0x7e0, None): [
       b'\xb5\"@p\a',
       b'\xb5"@P\x07',
+      b'\xb5+@q\x07',
     ],
     (Ecu.transmission, 0x7e1, None): [
       b'\xbc\xf2\x00\x81\x00',
       b'\xf1\x00\xa4\x10@',
       b'\xbc\xf2\x00\x80\x00',
+      b'\xbc\xfb\xc0`\x00',
     ],
   },
   CAR.LEVORG_PREGLOBAL: {
@@ -373,6 +404,8 @@ FW_VERSIONS = {
     # 2021 Outback - UDM / @Frye - FL
     # 2020 Outback 2.4 Touring XT  - UDM / @chrissantamaria
     # 2022 Outback - UDM / @atran913
+    # 2022 Outback - UDM / @duchuy1993
+    # 2022 Outback XT Touring - UDM / @cook.w.ryan
     # Ecu, addr, subaddr: ROM ID
     (Ecu.esp, 0x7b0, None): [
       b'\xa1  \x06\x01',
@@ -380,6 +413,8 @@ FW_VERSIONS = {
       b'\xa1  \b\001',
       b'\xa1  \x06\x00',
       b'\xa1 "\t\x01',
+      b'\xa1  \x08\x02',
+      b'\xa1 \x06\x02',
     ],
     (Ecu.eps, 0x746, None): [
       b'\x9b\xc0\x10\x00',
@@ -397,12 +432,16 @@ FW_VERSIONS = {
       b'\xde"`0\a',
       b'\xf1\x82\xbc,\xa0q\a',
       b'\xf1\x82\xe3,\xa0@\x07',
+      b'\xe2"`p\x07',
+      b'\xf1\x82\xe2,\xa0@\x07',
     ],
     (Ecu.transmission, 0x7e1, None): [
       b'\xa5\xfe\xf7@\x00',
       b'\xa5\xf6D@\x00',
       b'\xa5\xfe\xf6@\x00',
       b'\xa7\x8e\xf40\x00',
+      b'\xf1\x82\xa7\xf6D@\x00',
+      b'\xa7\xfe\xf4@\x00',
     ],
   },
   CAR.OUTBACK_PREGLOBAL: {
@@ -544,6 +583,7 @@ STEER_THRESHOLD = {
   CAR.CROSSTREK_2020H: 80,
   CAR.FORESTER: 80,
   CAR.FORESTER_PREGLOBAL: 75,
+  CAR.LEGACY: 80,
   CAR.LEGACY_PREGLOBAL: 75,
   CAR.LEGACY_PREGLOBAL_2018: 75,
   CAR.LEVORG_PREGLOBAL: 75,
@@ -560,6 +600,7 @@ DBC = {
   CAR.CROSSTREK_2020H: dbc_dict('subaru_global_2020_hybrid_generated', None),
   CAR.FORESTER: dbc_dict('subaru_global_2017_generated', None),
   CAR.FORESTER_PREGLOBAL: dbc_dict('subaru_forester_2017_generated', None),
+  CAR.LEGACY: dbc_dict('subaru_global_2017_generated', None),
   CAR.LEGACY_PREGLOBAL: dbc_dict('subaru_outback_2015_generated', None),
   CAR.LEGACY_PREGLOBAL_2018: dbc_dict('subaru_outback_2019_generated', None),
   CAR.LEVORG_PREGLOBAL: dbc_dict('subaru_forester_2017_generated', None),
