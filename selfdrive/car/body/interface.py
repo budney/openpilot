@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
+import math
 from cereal import car
+from common.realtime import DT_CTRL
 from selfdrive.car import scale_rot_inertia, scale_tire_stiffness, get_safety_config
 from selfdrive.car.interfaces import CarInterfaceBase
 from selfdrive.car.body.values import SPEED_FROM_RPM
@@ -14,6 +16,7 @@ class CarInterface(CarInterfaceBase):
     ret.carName = "body"
     ret.safetyConfigs = [get_safety_config(car.CarParams.SafetyModel.body)]
 
+    ret.minSteerSpeed = -math.inf
     ret.steerRatio = 0.5
     ret.steerRateCost = 0.5
     ret.steerLimitTimer = 1.0
@@ -34,15 +37,18 @@ class CarInterface(CarInterfaceBase):
 
     return ret
 
-  def update(self, c, can_strings):
-    self.cp.update_strings(can_strings)
-
+  def _update(self, c):
     ret = self.CS.update(self.cp)
 
-    ret.canValid = self.cp.can_valid
+    # wait for everything to init first
+    if self.frame > int(5. / DT_CTRL):
+      # body always wants to enable
+      ret.init('events', 1)
+      ret.events[0].name = car.CarEvent.EventName.pcmEnable
+      ret.events[0].enable = True
+    self.frame += 1
 
-    self.CS.out = ret.as_reader()
-    return self.CS.out
+    return ret
 
   def apply(self, c):
     return self.CC.update(c, self.CS)

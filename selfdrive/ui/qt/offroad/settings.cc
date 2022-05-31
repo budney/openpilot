@@ -72,16 +72,16 @@ TogglesPanel::TogglesPanel(SettingsWindow *parent) : ListWidget(parent) {
       "../assets/offroad/icon_speed_limit.png",
     },
     {
-      "DisableDisengageOnGasToggle",
-      "Disable Disengage On Gas Press",
-      "Unsafe option to disable openpilot disengage on gas pedal press. For use only for WIP models which do not support disengage on gas pedal press yet",
-      "../assets/offroad/icon_speed_limit.png",
-    },
-    {
       "FirmwareQueryDelay",
       "Firmware query delay",
       "Add 10 second delay before running FPv2 ECU firmware queries. May be needed for Subaru pre-global models",
       "../assets/offroad/icon_speed_limit.png",
+    },
+    {
+      "DisengageOnAccelerator",
+      "Disengage On Accelerator Pedal",
+      "When enabled, pressing the accelerator pedal will disengage openpilot.",
+      "../assets/offroad/icon_disengage_on_accelerator.svg",
     },
 #ifdef ENABLE_MAPS
     {

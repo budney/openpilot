@@ -125,6 +125,25 @@ pipeline {
                   }
                 }
 
+                stage('C3: camerad') {
+                  steps {
+                    phone_steps("tici-party", [
+                      ["build", "cd selfdrive/manager && ./build.py"],
+                      ["test camerad", "python selfdrive/camerad/test/test_camerad.py"],
+                      ["test exposure", "python selfdrive/camerad/test/test_exposure.py"],
+                    ])
+                  }
+                }
+
+                stage('C3: replay') {
+                  steps {
+                    phone_steps("tici3", [
+                      ["build", "cd selfdrive/manager && ./build.py"],
+                      ["model replay", "cd selfdrive/test/process_replay && ./model_replay.py"],
+                    ])
+                  }
+                }
+
               }
             }
 

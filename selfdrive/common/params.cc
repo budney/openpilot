@@ -94,11 +94,11 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"CompletedTrainingVersion", PERSISTENT},
     {"ControlsReady", CLEAR_ON_MANAGER_START | CLEAR_ON_IGNITION_ON},
     {"CurrentRoute", CLEAR_ON_MANAGER_START | CLEAR_ON_IGNITION_ON},
-    {"DisableDisengageOnGasToggle", PERSISTENT},
     {"DisablePowerDown", PERSISTENT},
     {"DisableRadar_Allow", PERSISTENT},
     {"DisableRadar", PERSISTENT}, // WARNING: THIS DISABLES AEB
     {"DisableUpdates", PERSISTENT},
+    {"DisengageOnAccelerator", PERSISTENT},
     {"DongleId", PERSISTENT},
     {"DoReboot", CLEAR_ON_MANAGER_START},
     {"DoShutdown", CLEAR_ON_MANAGER_START},

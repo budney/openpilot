@@ -174,6 +174,9 @@ class CarInterface(CarInterfaceBase):
     self.cp_cam.update_strings(can_strings)
     if self.cp_body:
       self.cp_body.update_strings(can_strings)
+    return _update(self, c)
+
+  def _update(self, c):
 
     ret = self.CS.update(self.cp, self.cp_cam, self.cp_body)
 
@@ -182,8 +185,7 @@ class CarInterface(CarInterfaceBase):
 
     ret.events = self.create_common_events(ret).to_msg()
 
-    self.CS.out = ret.as_reader()
-    return self.CS.out
+    return ret
 
   def apply(self, c):
     hud_control = c.hudControl
