@@ -18,18 +18,6 @@ fi
 
 ln -snf ${env.TEST_DIR} /data/pythonpath
 
-if [ -f /EON ]; then
-  # kill all old procs in the openpilot cpuset
-  while read p; do
-    kill "\$p" || true
-  done < /dev/cpuset/app/tasks
-
-  echo \$\$ > /dev/cpuset/app/tasks || true
-
-  mkdir -p /dev/shm
-  chmod 777 /dev/shm
-fi
-
 cd ${env.TEST_DIR} || true
 ${cmd}
 exit 0
@@ -62,6 +50,18 @@ pipeline {
   }
 
   stages {
+    stage('build release3') {
+      agent { docker { image 'ghcr.io/commaai/alpine-ssh'; args '--user=root' } }
+      when {
+        branch 'devel-staging'
+      }
+      steps {
+        phone_steps("tici", [
+          ["build release3-staging & dashcam3-staging", "PUSH=1 $SOURCE_DIR/release/build_release.sh"],
+        ])
+      }
+    }
+
     stage('openpilot tests') {
       when {
         not {
@@ -80,9 +80,33 @@ pipeline {
           stages {
             stage('parallel tests') {
               parallel {
-                stage('C2: build') {
+                /*
+                stage('Power Consumption Tests') {
                   steps {
-                    phone_steps("eon-build", [
+                    lock(resource: "", label: "c2-zookeeper", inversePrecedence: true, variable: 'device_ip', quantity: 1) {
+                      timeout(time: 90, unit: 'MINUTES') {
+                        sh script: "/home/batman/tools/zookeeper/enable_and_wait.py $device_ip 120", label: "turn on device"
+                        phone(device_ip, "git checkout", readFile("selfdrive/test/setup_device_ci.sh"),)
+                        phone(device_ip, "build", "scons -j4 && sync")
+                        sh script: "/home/batman/tools/zookeeper/disable.py $device_ip", label: "turn off device"
+                        sh script: "/home/batman/tools/zookeeper/enable_and_wait.py $device_ip 120", label: "turn on device"
+                        sh script: "/home/batman/tools/zookeeper/check_consumption.py 60 3", label: "idle power consumption after boot"
+                        sh script: "/home/batman/tools/zookeeper/ignition.py 1", label: "go onroad"
+                        sh script: "/home/batman/tools/zookeeper/check_consumption.py 60 10", label: "onroad power consumption"
+                        sh script: "/home/batman/tools/zookeeper/ignition.py 0", label: "go offroad"
+                        sh script: "/home/batman/tools/zookeeper/check_consumption.py 60 2", label: "idle power consumption offroad"
+                      }
+                    }
+                  }
+                }
+                */
+
+                stage('build') {
+                  environment {
+                    R3_PUSH = "${env.BRANCH_NAME == 'master' ? '1' : ' '}"
+                  }
+                  steps {
+                    phone_steps("tici", [
                       ["build master-ci", "cd $SOURCE_DIR/release && EXTRA_FILES='tools/' ./build_devel.sh"],
                       ["build openpilot", "cd selfdrive/manager && ./build.py"],
                       ["test manager", "python selfdrive/manager/test/test_manager.py"],
@@ -92,40 +116,19 @@ pipeline {
                   }
                 }
 
-                stage('C2: replay') {
+                stage('HW + Unit Tests') {
                   steps {
-                    phone_steps("eon2", [
+                    phone_steps("tici2", [
                       ["build", "cd selfdrive/manager && ./build.py"],
-                      ["model replay", "cd selfdrive/test/process_replay && ./model_replay.py"],
-                    ])
-                  }
-                }
-
-                stage('C2: HW + Unit Tests') {
-                  steps {
-                    phone_steps("eon", [
-                      ["build", "cd selfdrive/manager && ./build.py"],
-                      ["test sounds", "python selfdrive/ui/tests/test_soundd.py"],
+                      ["test power draw", "python selfdrive/hardware/tici/test_power_draw.py"],
                       ["test boardd loopback", "python selfdrive/boardd/tests/test_boardd_loopback.py"],
                       ["test loggerd", "python selfdrive/loggerd/tests/test_loggerd.py"],
-                      ["test encoder", "python selfdrive/loggerd/tests/test_encoder.py"],
-                      ["test logcatd", "python selfdrive/logcatd/tests/test_logcatd_android.py"],
-                      ["test updater", "python selfdrive/hardware/eon/test_neos_updater.py"],
+                      ["test encoder", "LD_LIBRARY_PATH=/usr/local/lib python selfdrive/loggerd/tests/test_encoder.py"],
                     ])
                   }
                 }
 
-               stage('C2: camerad') {
-                  steps {
-                    phone_steps("eon-party", [
-                      ["build", "cd selfdrive/manager && ./build.py"],
-                      ["test camerad", "python selfdrive/camerad/test/test_camerad.py"],
-                      ["test exposure", "python selfdrive/camerad/test/test_exposure.py"],
-                    ])
-                  }
-                }
-
-                stage('C3: camerad') {
+                stage('camerad') {
                   steps {
                     phone_steps("tici-party", [
                       ["build", "cd selfdrive/manager && ./build.py"],
@@ -135,7 +138,7 @@ pipeline {
                   }
                 }
 
-                stage('C3: replay') {
+                stage('replay') {
                   steps {
                     phone_steps("tici3", [
                       ["build", "cd selfdrive/manager && ./build.py"],
@@ -152,8 +155,8 @@ pipeline {
                 branch 'commatwo_master'
               }
               steps {
-                phone_steps("eon-build", [
-                  ["build release2-staging", "PUSH=1 $SOURCE_DIR/release/build_release.sh"],
+                phone_steps("tici-build", [
+                  ["push devel", "cd $SOURCE_DIR/release && PUSH='master-ci' ./build_devel.sh"],
                 ])
               }
             }
