@@ -13,6 +13,8 @@ class CarControllerParams:
   def __init__(self, CP):
     if CP.carFingerprint == CAR.IMPREZA_2020:
       self.STEER_MAX = 1439
+    elif CP.carFingerprint == CAR.IMPREZA:
+      self.STEER_MAX = 3071
     else:
       self.STEER_MAX = 2047
     self.STEER_STEP = 2                # how often we update the steer cmd
@@ -259,6 +261,7 @@ FW_VERSIONS = {
       b'\x00\x00eY\x1f@ !',
       b'\x00\x00e!\x00\x00\x00\x00',
       b'\x00\x00e\x97\x00\x00\x00\x00',
+      b'\x00\x00eY\x1f@ !',
     ],
     (Ecu.engine, 0x7e0, None): [
       b'\xb6"`A\x07',
@@ -276,6 +279,7 @@ FW_VERSIONS = {
       b'\xf1\x00\xa4\x10@',
       b'\x1b\xa7@a\x00',
       b'\x1a\xf6b0\x00',
+      b'\x1b\xa7@a\x00',
     ],
   },
   CAR.FORESTER_PREGLOBAL: {
