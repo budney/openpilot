@@ -7,7 +7,7 @@ from selfdrive.car.interfaces import CarInterfaceBase
 class CarInterface(CarInterfaceBase):
 
   @staticmethod
-  def get_params(candidate, fingerprint=gen_empty_fingerprint(), car_fw=None):
+  def get_params(candidate, fingerprint=gen_empty_fingerprint(), car_fw=None, disable_radar=False):
     ret = CarInterfaceBase.get_std_params(candidate, fingerprint)
 
     ret.carName = "subaru"
@@ -138,15 +138,15 @@ class CarInterface(CarInterfaceBase):
       ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.1, 0.2], [0.01, 0.02]]
 
     if candidate == CAR.LEVORG_PREGLOBAL:
-       ret.safetyConfigs[0].safetyParam = 1  # Levorg has reversed driver torque signal
-       ret.mass = 1568 + STD_CARGO_KG
-       ret.wheelbase = 2.67
-       ret.centerToFront = ret.wheelbase * 0.5
-       ret.steerRatio = 12.5   # 14.5 stock
-       ret.steerActuatorDelay = 0.15
-       ret.lateralTuning.pid.kf = 0.00005
-       ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0., 20.], [0., 20.]]
-       ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.1, 0.2], [0.01, 0.02]]
+      ret.safetyConfigs[0].safetyParam = 1  # Levorg has reversed driver torque signal
+      ret.mass = 1568 + STD_CARGO_KG
+      ret.wheelbase = 2.67
+      ret.centerToFront = ret.wheelbase * 0.5
+      ret.steerRatio = 12.5   # 14.5 stock
+      ret.steerActuatorDelay = 0.15
+      ret.lateralTuning.pid.kf = 0.00005
+      ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0., 20.], [0., 20.]]
+      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.1, 0.2], [0.01, 0.02]]
 
     if candidate == CAR.OUTBACK_PREGLOBAL:
       ret.mass = 1568 + STD_CARGO_KG
@@ -169,11 +169,7 @@ class CarInterface(CarInterfaceBase):
     return ret
 
   # returns a car.CarState
-  def update(self, c, can_strings):
-    self.cp.update_strings(can_strings)
-    self.cp_cam.update_strings(can_strings)
-    if self.cp_body:
-      self.cp_body.update_strings(can_strings)
+  def _update(self, c):
 
     ret = self.CS.update(self.cp, self.cp_cam, self.cp_body)
 
@@ -182,12 +178,11 @@ class CarInterface(CarInterfaceBase):
 
     ret.events = self.create_common_events(ret).to_msg()
 
-    self.CS.out = ret.as_reader()
-    return self.CS.out
+    return ret
 
   def apply(self, c):
     hud_control = c.hudControl
-    ret = self.CC.update(c, c.enabled, self.CS, self.frame, c.actuators,
+    ret = self.CC.update(c, self.CS, self.frame, c.actuators,
                          c.cruiseControl.cancel, hud_control.visualAlert,
                          hud_control.leftLaneVisible, hud_control.rightLaneVisible, hud_control.leftLaneDepart, hud_control.rightLaneDepart)
     self.frame += 1

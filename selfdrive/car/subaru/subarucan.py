@@ -66,7 +66,7 @@ def create_es_lkas(packer, es_lkas_msg, enabled, visual_alert, left_line, right_
     values["LKAS_ACTIVE"] = 1 # Show LKAS lane lines
     values["LKAS_Dash_State"] = 2 # Green enabled indicator
   else:
-     values["LKAS_Dash_State"] = 0 # LKAS Not enabled
+    values["LKAS_Dash_State"] = 0 # LKAS Not enabled
 
   values["LKAS_Left_Line_Visible"] = int(left_line)
   values["LKAS_Right_Line_Visible"] = int(right_line)
@@ -92,14 +92,14 @@ def create_throttle(packer, throttle_msg, throttle_cmd):
 
 def create_brake_pedal(packer, brake_pedal_msg, speed_cmd, brake_cmd):
 
-   values = copy.copy(brake_pedal_msg)
-   if speed_cmd:
-     values["Speed"] = 3
-   if brake_cmd:
-     values["Brake_Pedal"] = 5
-     values["Brake_Lights"] = 1
+  values = copy.copy(brake_pedal_msg)
+  if speed_cmd:
+    values["Speed"] = 3
+  if brake_cmd:
+    values["Brake_Pedal"] = 5
+    values["Brake_Lights"] = 1
 
-   return packer.make_can_msg("Brake_Pedal", 2, values)
+  return packer.make_can_msg("Brake_Pedal", 2, values)
 
 # *** Subaru Pre-global ***
 

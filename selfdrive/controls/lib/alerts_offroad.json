@@ -1,8 +1,4 @@
 {
-  "Offroad_ChargeDisabled": {
-    "text": "EON charging disabled after car being off for more than 30 hours. Turn ignition on to start charging again.",
-    "severity": 0
-  },
   "Offroad_TemperatureTooHigh": {
     "text": "Device temperature too high. System won't start.",
     "severity": 1
@@ -20,6 +16,10 @@
     "text": "Unable to download updates\n",
     "severity": 1,
     "_comment": "Append the command and error to the text."
+  },
+  "Offroad_NoMoreUpdates": {
+    "text": "subaru-community has deprecated EON and C2 support, your device will no longer update on this branch. Please consider switching to subaru-community-c2 branch or upgrade to C3.",
+    "severity": 1
   },
   "Offroad_InvalidTime": {
     "text": "Invalid date and time settings, system won't start. Connect to internet to set time.",
@@ -39,6 +39,10 @@
   },
   "Offroad_StorageMissing": {
     "text": "NVMe drive not mounted.",
+    "severity": 1
+  },
+  "Offroad_BadNvme": {
+    "text": "Unsupported NVMe drive detected. Device may draw significantly more power and overheat due to the unsupported NVMe.",
     "severity": 1
   },
   "Offroad_CarUnrecognized": {
