@@ -7,7 +7,7 @@ from functools import lru_cache
 from common.basedir import BASEDIR
 from selfdrive.swaglog import cloudlog
 
-TESTED_BRANCHES = ['devel', 'release3-staging', 'dashcam3-staging', 'release3', 'dashcam3']
+TESTED_BRANCHES = ['devel', 'release2-staging', 'release3-staging', 'dashcam-staging', 'release2', 'release3', 'dashcam']
 
 training_version: bytes = b"0.2.0"
 terms_version: bytes = b"2"
@@ -55,26 +55,22 @@ def get_origin(default: Optional[str] = None) -> Optional[str]:
 
 @cache
 def get_normalized_origin(default: Optional[str] = None) -> Optional[str]:
-  origin: Optional[str] = get_origin()
-
-  if origin is None:
-    return default
-
-  return origin.replace("git@", "", 1) \
-               .replace(".git", "", 1) \
-               .replace("https://", "", 1) \
-               .replace(":", "/", 1)
+  return get_origin()\
+          .replace("git@", "", 1)\
+          .replace(".git", "", 1)\
+          .replace("https://", "", 1)\
+          .replace(":", "/", 1)
 
 
 @cache
 def get_version() -> str:
-  with open(os.path.join(BASEDIR, "common", "version.h")) as _versionf:
+  with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "common", "version.h")) as _versionf:
     version = _versionf.read().split('"')[1]
   return version
 
 @cache
 def get_short_version() -> str:
-  return get_version().split('-')[0]  # type: ignore
+  return get_version().split('-')[0]
 
 @cache
 def is_prebuilt() -> bool:
@@ -85,7 +81,7 @@ def is_prebuilt() -> bool:
 def is_comma_remote() -> bool:
   # note to fork maintainers, this is used for release metrics. please do not
   # touch this to get rid of the orange startup alert. there's better ways to do that
-  origin: Optional[str] = get_origin()
+  origin = get_origin()
   if origin is None:
     return False
 

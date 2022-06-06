@@ -25,7 +25,6 @@ SUPPORTED_CARS |= set(interface_names['hyundai'])
 SUPPORTED_CARS |= set(interface_names['volkswagen'])
 SUPPORTED_CARS |= set(interface_names['mazda'])
 SUPPORTED_CARS |= set(interface_names['subaru'])
-SUPPORTED_CARS |= set(interface_names['nissan'])
 
 try:
   from xx.pipeline.c.CarState import migration
@@ -75,8 +74,7 @@ if __name__ == "__main__":
 
       for msg in lr:
         if msg.which() == "pandaStates":
-          if msg.pandaStates[0].pandaType not in ('uno', 'blackPanda', 'dos'):
-            print("wrong panda type")
+          if msg.pandaStates[0].pandaType not in ['uno', 'blackPanda', 'dos']:
             break
 
         elif msg.which() == "carParams":
@@ -84,7 +82,6 @@ if __name__ == "__main__":
 
           car_fw = msg.carParams.carFw
           if len(car_fw) == 0:
-            print("no fw")
             break
 
           live_fingerprint = msg.carParams.carFingerprint
@@ -94,7 +91,6 @@ if __name__ == "__main__":
             live_fingerprint = args.car
 
           if live_fingerprint not in SUPPORTED_CARS:
-            print("not in supported cars")
             break
 
           fw_versions_dict = build_fw_dict(car_fw)

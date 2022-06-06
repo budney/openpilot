@@ -2,8 +2,8 @@
 
 #include <cassert>
 
-#include "common/swaglog.h"
-#include "common/timing.h"
+#include "selfdrive/common/swaglog.h"
+#include "selfdrive/common/timing.h"
 
 LSM6DS3_Accel::LSM6DS3_Accel(I2CBus *bus) : I2CSensor(bus) {}
 

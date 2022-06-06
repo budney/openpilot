@@ -348,8 +348,6 @@ class VideoStreamDecompressor:
           if len(r) == 0:
             break
           self.proc.stdin.write(r)
-    except BrokenPipeError:
-      pass
     finally:
       self.proc.stdin.close()
 

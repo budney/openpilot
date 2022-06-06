@@ -1,5 +1,4 @@
 #pragma once
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 
 #include <DlContainer/IDlContainer.hpp>
 #include <DlSystem/DlError.hpp>
@@ -23,24 +22,20 @@
 
 class SNPEModel : public RunModel {
 public:
-  SNPEModel(const char *path, float *loutput, size_t loutput_size, int runtime, bool luse_extra = false);
+  SNPEModel(const char *path, float *loutput, size_t loutput_size, int runtime);
   void addRecurrent(float *state, int state_size);
   void addTrafficConvention(float *state, int state_size);
-  void addCalib(float *state, int state_size);
   void addDesire(float *state, int state_size);
-  void addImage(float *image_buf, int buf_size);
-  void addExtra(float *image_buf, int buf_size);
-  void execute();
+  void execute(float *net_input_buf, int buf_size);
 
 #ifdef USE_THNEED
-  std::unique_ptr<Thneed> thneed;
-  bool thneed_recorded = false;
+  Thneed *thneed = NULL;
 #endif
 
 private:
   std::string model_data;
 
-#ifdef QCOM2
+#if defined(QCOM) || defined(QCOM2)
   zdl::DlSystem::Runtime_t Runtime;
 #endif
 
@@ -50,20 +45,12 @@ private:
   // snpe input stuff
   zdl::DlSystem::UserBufferMap inputMap;
   std::unique_ptr<zdl::DlSystem::IUserBuffer> inputBuffer;
-  float *input;
-  size_t input_size;
 
   // snpe output stuff
   zdl::DlSystem::UserBufferMap outputMap;
   std::unique_ptr<zdl::DlSystem::IUserBuffer> outputBuffer;
   float *output;
   size_t output_size;
-
-  // extra input stuff
-  std::unique_ptr<zdl::DlSystem::IUserBuffer> extraBuffer;
-  float *extra;
-  size_t extra_size;
-  bool use_extra;
 
   // recurrent and desire
   std::unique_ptr<zdl::DlSystem::IUserBuffer> addExtra(float *state, int state_size, int idx);
@@ -74,6 +61,4 @@ private:
   std::unique_ptr<zdl::DlSystem::IUserBuffer> trafficConventionBuffer;
   float *desire;
   std::unique_ptr<zdl::DlSystem::IUserBuffer> desireBuffer;
-  float *calib;
-  std::unique_ptr<zdl::DlSystem::IUserBuffer> calibBuffer;
 };

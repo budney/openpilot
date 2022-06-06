@@ -2,7 +2,7 @@ import sys
 import pygame  # pylint: disable=import-error
 import cv2  # pylint: disable=import-error
 
-class Window:
+class Window():
   def __init__(self, w, h, caption="window", double=False, halve=False):
     self.w = w
     self.h = h
@@ -11,18 +11,11 @@ class Window:
     self.double = double
     self.halve = halve
     if self.double:
-      self.rw, self.rh = w*2, h*2
+      self.screen = pygame.display.set_mode((w*2, h*2))
     elif self.halve:
-      self.rw, self.rh = w//2, h//2
+      self.screen = pygame.display.set_mode((w//2, h//2))
     else:
-      self.rw, self.rh = w, h
-    self.screen = pygame.display.set_mode((self.rw, self.rh))
-    pygame.display.flip()
-
-    # hack for xmonad, it shrinks the window by 6 pixels after the display.flip
-    if self.screen.get_width() != self.rw:
-      self.screen = pygame.display.set_mode((self.rw+(self.rw-self.screen.get_width()), self.rh+(self.rh-self.screen.get_height())))
-      pygame.display.flip()
+      self.screen = pygame.display.set_mode((w, h))
 
   def draw(self, out):
     pygame.event.pump()
@@ -54,7 +47,7 @@ class Window:
 if __name__ == "__main__":
   import numpy as np
   win = Window(200, 200, double=True)
-  img: np.ndarray = np.zeros((200, 200, 3), np.uint8)
+  img = np.zeros((200, 200, 3), np.uint8)
   while 1:
     print("draw")
     img += 1

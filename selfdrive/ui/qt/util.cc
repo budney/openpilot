@@ -4,8 +4,8 @@
 #include <QLayoutItem>
 #include <QStyleOption>
 
-#include "common/params.h"
-#include "common/swaglog.h"
+#include "selfdrive/common/params.h"
+#include "selfdrive/common/swaglog.h"
 #include "selfdrive/hardware/hw.h"
 
 QString getVersion() {
@@ -89,19 +89,13 @@ void setQtSurfaceFormat() {
   QSurfaceFormat::setDefaultFormat(fmt);
 }
 
-void initApp(int argc, char *argv[]) {
+void initApp() {
   Hardware::set_display_power(true);
   Hardware::set_brightness(65);
-
-#ifdef __APPLE__
-  {
-    // Get the devicePixelRatio, and scale accordingly to maintain 1:1 rendering
-    QApplication tmp(argc, argv);
-    qputenv("QT_SCALE_FACTOR", QString::number(1.0 / tmp.devicePixelRatio() ).toLocal8Bit());
-  }
-#endif
-
   setQtSurfaceFormat();
+  if (Hardware::EON()) {
+    QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+  }
 }
 
 void swagLogMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg) {

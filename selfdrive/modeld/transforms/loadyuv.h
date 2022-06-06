@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/clutil.h"
+#include "selfdrive/common/clutil.h"
 
 typedef struct {
   int width, height;

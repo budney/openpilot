@@ -7,7 +7,7 @@
 const QString DEMO_ROUTE = "4cf7a6ad03080c90|2021-09-29--13-46-36";
 
 int main(int argc, char *argv[]) {
-  QCoreApplication app(argc, argv);
+  QApplication app(argc, argv);
 
   const std::tuple<QString, REPLAY_FLAGS, QString> flags[] = {
       {"dcam", REPLAY_FLAG_DCAM, "load driver camera"},
@@ -15,7 +15,8 @@ int main(int argc, char *argv[]) {
       {"no-loop", REPLAY_FLAG_NO_LOOP, "stop at the end of the route"},
       {"no-cache", REPLAY_FLAG_NO_FILE_CACHE, "turn off local cache"},
       {"qcam", REPLAY_FLAG_QCAMERA, "load qcamera"},
-      {"no-hw-decoder", REPLAY_FLAG_NO_HW_DECODER, "disable HW video decoding"},
+      {"yuv", REPLAY_FLAG_SEND_YUV, "send yuv frame"},
+      {"no-cuda", REPLAY_FLAG_NO_CUDA, "disable CUDA"},
       {"no-vipc", REPLAY_FLAG_NO_VIPC, "do not output video"},
   };
 

@@ -6,24 +6,23 @@ from casadi import SX, vertcat, sin, cos
 
 from common.realtime import sec_since_boot
 from selfdrive.controls.lib.drive_helpers import LAT_MPC_N as N
-from selfdrive.modeld.constants import T_IDXS
+from selfdrive.controls.lib.drive_helpers import T_IDXS
 
 if __name__ == '__main__':  # generating code
   from pyextra.acados_template import AcadosModel, AcadosOcp, AcadosOcpSolver
 else:
-  from selfdrive.controls.lib.lateral_mpc_lib.c_generated_code.acados_ocp_solver_pyx import AcadosOcpSolverCython  # pylint: disable=no-name-in-module, import-error
+  # from pyextra.acados_template import AcadosOcpSolverFast
+  from selfdrive.controls.lib.lateral_mpc_lib.c_generated_code.acados_ocp_solver_pyx import AcadosOcpSolverFast  # pylint: disable=no-name-in-module, import-error
 
 LAT_MPC_DIR = os.path.dirname(os.path.abspath(__file__))
 EXPORT_DIR = os.path.join(LAT_MPC_DIR, "c_generated_code")
-JSON_FILE = os.path.join(LAT_MPC_DIR, "acados_ocp_lat.json")
+JSON_FILE = "acados_ocp_lat.json"
 X_DIM = 4
 P_DIM = 2
-MODEL_NAME = 'lat'
-ACADOS_SOLVER_TYPE = 'SQP_RTI'
 
 def gen_lat_model():
   model = AcadosModel()
-  model.name = MODEL_NAME
+  model.name = 'lat'
 
   # set up states & controls
   x_ego = SX.sym('x_ego')
@@ -59,7 +58,7 @@ def gen_lat_model():
   return model
 
 
-def gen_lat_ocp():
+def gen_lat_mpc_solver():
   ocp = AcadosOcp()
   ocp.model = gen_lat_model()
 
@@ -104,7 +103,7 @@ def gen_lat_ocp():
   ocp.solver_options.qp_solver = 'PARTIAL_CONDENSING_HPIPM'
   ocp.solver_options.hessian_approx = 'GAUSS_NEWTON'
   ocp.solver_options.integrator_type = 'ERK'
-  ocp.solver_options.nlp_solver_type = ACADOS_SOLVER_TYPE
+  ocp.solver_options.nlp_solver_type = 'SQP_RTI'
   ocp.solver_options.qp_solver_iter_max = 1
   ocp.solver_options.qp_solver_cond_N = 1
 
@@ -118,7 +117,7 @@ def gen_lat_ocp():
 
 class LateralMpc():
   def __init__(self, x0=np.zeros(X_DIM)):
-    self.solver = AcadosOcpSolverCython(MODEL_NAME, ACADOS_SOLVER_TYPE, N)
+    self.solver = AcadosOcpSolverFast('lat', N, EXPORT_DIR)
     self.reset(x0)
 
   def reset(self, x0=np.zeros(X_DIM)):
@@ -174,6 +173,5 @@ class LateralMpc():
 
 
 if __name__ == "__main__":
-  ocp = gen_lat_ocp()
-  AcadosOcpSolver.generate(ocp, json_file=JSON_FILE)
-  # AcadosOcpSolver.build(ocp.code_export_directory, with_cython=True)
+  ocp = gen_lat_mpc_solver()
+  AcadosOcpSolver.generate(ocp, json_file=JSON_FILE, build=False)

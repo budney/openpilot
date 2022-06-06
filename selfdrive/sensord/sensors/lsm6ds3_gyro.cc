@@ -3,8 +3,8 @@
 #include <cassert>
 #include <cmath>
 
-#include "common/swaglog.h"
-#include "common/timing.h"
+#include "selfdrive/common/swaglog.h"
+#include "selfdrive/common/timing.h"
 
 #define DEG2RAD(x) ((x) * M_PI / 180.0)
 

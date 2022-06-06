@@ -12,8 +12,8 @@
 #include <QJsonDocument>
 #include <QNetworkRequest>
 
-#include "common/params.h"
-#include "common/util.h"
+#include "selfdrive/common/params.h"
+#include "selfdrive/common/util.h"
 #include "selfdrive/hardware/hw.h"
 #include "selfdrive/ui/qt/util.h"
 
@@ -117,7 +117,7 @@ void HttpRequest::requestFinished() {
   networkTimer->stop();
 
   if (reply->error() == QNetworkReply::NoError) {
-    emit requestDone(reply->readAll(), true, reply->error());
+    emit requestDone(reply->readAll(), true);
   } else {
     QString error;
     if (reply->error() == QNetworkReply::OperationCanceledError) {
@@ -125,9 +125,12 @@ void HttpRequest::requestFinished() {
       nam()->clearConnectionCache();
       error = "Request timed out";
     } else {
+      if (reply->error() == QNetworkReply::ContentAccessDenied || reply->error() == QNetworkReply::AuthenticationRequiredError) {
+        qWarning() << ">>  Unauthorized. Authenticate with tools/lib/auth.py  <<";
+      }
       error = reply->errorString();
     }
-    emit requestDone(error, false, reply->error());
+    emit requestDone(error, false);
   }
 
   reply->deleteLater();

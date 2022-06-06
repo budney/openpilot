@@ -270,28 +270,28 @@ class AcadosOcpDims:
 
     @nx.setter
     def nx(self, nx):
-        if isinstance(nx, int) and nx > 0:
+        if type(nx) == int and nx > 0:
             self.__nx = nx
         else:
             raise Exception('Invalid nx value, expected positive integer. Exiting.')
 
     @nz.setter
     def nz(self, nz):
-        if isinstance(nz, int) and nz > -1:
+        if type(nz) == int and nz > -1:
             self.__nz = nz
         else:
             raise Exception('Invalid nz value, expected nonnegative integer. Exiting.')
 
     @nu.setter
     def nu(self, nu):
-        if isinstance(nu, int) and nu > -1:
+        if type(nu) == int and nu > -1:
             self.__nu = nu
         else:
             raise Exception('Invalid nu value, expected nonnegative integer. Exiting.')
 
     @np.setter
     def np(self, np):
-        if isinstance(np, int) and np > -1:
+        if type(np) == int and np > -1:
             self.__np = np
         else:
             raise Exception('Invalid np value, expected nonnegative integer. Exiting.')
@@ -312,49 +312,49 @@ class AcadosOcpDims:
 
     @ny_e.setter
     def ny_e(self, ny_e):
-        if isinstance(ny_e, int) and ny_e > -1:
+        if type(ny_e) == int and ny_e > -1:
             self.__ny_e = ny_e
         else:
             raise Exception('Invalid ny_e value, expected nonnegative integer. Exiting.')
 
     @nr.setter
     def nr(self, nr):
-        if isinstance(nr, int) and nr > -1:
+        if type(nr) == int and nr > -1:
             self.__nr = nr
         else:
             raise Exception('Invalid nr value, expected nonnegative integer. Exiting.')
 
     @nr_e.setter
     def nr_e(self, nr_e):
-        if isinstance(nr_e, int) and nr_e > -1:
+        if type(nr_e) == int and nr_e > -1:
             self.__nr_e = nr_e
         else:
             raise Exception('Invalid nr_e value, expected nonnegative integer. Exiting.')
 
     @nh.setter
     def nh(self, nh):
-        if isinstance(nh, int) and nh > -1:
+        if type(nh) == int and nh > -1:
             self.__nh = nh
         else:
             raise Exception('Invalid nh value, expected nonnegative integer. Exiting.')
 
     @nh_e.setter
     def nh_e(self, nh_e):
-        if isinstance(nh_e, int) and nh_e > -1:
+        if type(nh_e) == int and nh_e > -1:
             self.__nh_e = nh_e
         else:
             raise Exception('Invalid nh_e value, expected nonnegative integer. Exiting.')
 
     @nphi.setter
     def nphi(self, nphi):
-        if isinstance(nphi, int) and nphi > -1:
+        if type(nphi) == int and nphi > -1:
             self.__nphi = nphi
         else:
             raise Exception('Invalid nphi value, expected nonnegative integer. Exiting.')
 
     @nphi_e.setter
     def nphi_e(self, nphi_e):
-        if isinstance(nphi_e, int) and nphi_e > -1:
+        if type(nphi_e) == int and nphi_e > -1:
             self.__nphi_e = nphi_e
         else:
             raise Exception('Invalid nphi_e value, expected nonnegative integer. Exiting.')
@@ -375,42 +375,42 @@ class AcadosOcpDims:
 
     @nbx_0.setter
     def nbx_0(self, nbx_0):
-        if isinstance(nbx_0, int) and nbx_0 > -1:
+        if type(nbx_0) == int and nbx_0 > -1:
             self.__nbx_0 = nbx_0
         else:
             raise Exception('Invalid nbx_0 value, expected nonnegative integer. Exiting.')
 
     @nbx_e.setter
     def nbx_e(self, nbx_e):
-        if isinstance(nbx_e, int) and nbx_e > -1:
+        if type(nbx_e) == int and nbx_e > -1:
             self.__nbx_e = nbx_e
         else:
             raise Exception('Invalid nbx_e value, expected nonnegative integer. Exiting.')
 
     @nbu.setter
     def nbu(self, nbu):
-        if isinstance(nbu, int) and nbu > -1:
+        if type(nbu) == int and nbu > -1:
             self.__nbu = nbu
         else:
             raise Exception('Invalid nbu value, expected nonnegative integer. Exiting.')
 
     @nsbx.setter
     def nsbx(self, nsbx):
-        if isinstance(nsbx, int) and nsbx > -1:
+        if type(nsbx) == int and nsbx > -1:
             self.__nsbx = nsbx
         else:
             raise Exception('Invalid nsbx value, expected nonnegative integer. Exiting.')
 
     @nsbx_e.setter
     def nsbx_e(self, nsbx_e):
-        if isinstance(nsbx_e, int) and nsbx_e > -1:
+        if type(nsbx_e) == int and nsbx_e > -1:
             self.__nsbx_e = nsbx_e
         else:
             raise Exception('Invalid nsbx_e value, expected nonnegative integer. Exiting.')
 
     @nsbu.setter
     def nsbu(self, nsbu):
-        if isinstance(nsbu, int) and nsbu > -1:
+        if type(nsbu) == int and nsbu > -1:
             self.__nsbu = nsbu
         else:
             raise Exception('Invalid nsbu value, expected nonnegative integer. Exiting.')
@@ -1592,14 +1592,14 @@ class AcadosOcpConstraints:
     # initial x
     @lbx_0.setter
     def lbx_0(self, lbx_0):
-        if isinstance(lbx_0, np.ndarray):
+        if type(lbx_0) == np.ndarray:
             self.__lbx_0 = lbx_0
         else:
             raise Exception('Invalid lbx_0 value. Exiting.')
 
     @ubx_0.setter
     def ubx_0(self, ubx_0):
-        if isinstance(ubx_0, np.ndarray):
+        if type(ubx_0) == np.ndarray:
             self.__ubx_0 = ubx_0
         else:
             raise Exception('Invalid ubx_0 value. Exiting.')
@@ -1613,7 +1613,7 @@ class AcadosOcpConstraints:
 
     @Jbx_0.setter
     def Jbx_0(self, Jbx_0):
-        if isinstance(Jbx_0, np.ndarray):
+        if type(Jbx_0) == np.ndarray:
             self.__idxbx_0 = J_to_idx(Jbx_0)
         else:
             raise Exception('Invalid Jbx_0 value. Exiting.')
@@ -1639,28 +1639,28 @@ class AcadosOcpConstraints:
     # bounds on x
     @lbx.setter
     def lbx(self, lbx):
-        if isinstance(lbx, np.ndarray):
+        if type(lbx) == np.ndarray:
             self.__lbx = lbx
         else:
             raise Exception('Invalid lbx value. Exiting.')
 
     @ubx.setter
     def ubx(self, ubx):
-        if isinstance(ubx, np.ndarray):
+        if type(ubx) == np.ndarray:
             self.__ubx = ubx
         else:
             raise Exception('Invalid ubx value. Exiting.')
 
     @idxbx.setter
     def idxbx(self, idxbx):
-        if isinstance(idxbx, np.ndarray):
+        if type(idxbx) == np.ndarray:
             self.__idxbx = idxbx
         else:
             raise Exception('Invalid idxbx value. Exiting.')
 
     @Jbx.setter
     def Jbx(self, Jbx):
-        if isinstance(Jbx, np.ndarray):
+        if type(Jbx) == np.ndarray:
             self.__idxbx = J_to_idx(Jbx)
         else:
             raise Exception('Invalid Jbx value. Exiting.')
@@ -1668,28 +1668,28 @@ class AcadosOcpConstraints:
     # bounds on u
     @lbu.setter
     def lbu(self, lbu):
-        if isinstance(lbu, np.ndarray):
+        if type(lbu) == np.ndarray:
             self.__lbu = lbu
         else:
             raise Exception('Invalid lbu value. Exiting.')
 
     @ubu.setter
     def ubu(self, ubu):
-        if isinstance(ubu, np.ndarray):
+        if type(ubu) == np.ndarray:
             self.__ubu = ubu
         else:
             raise Exception('Invalid ubu value. Exiting.')
 
     @idxbu.setter
     def idxbu(self, idxbu):
-        if isinstance(idxbu, np.ndarray):
+        if type(idxbu) == np.ndarray:
             self.__idxbu = idxbu
         else:
             raise Exception('Invalid idxbu value. Exiting.')
 
     @Jbu.setter
     def Jbu(self, Jbu):
-        if isinstance(Jbu, np.ndarray):
+        if type(Jbu) == np.ndarray:
             self.__idxbu = J_to_idx(Jbu)
         else:
             raise Exception('Invalid Jbu value. Exiting.')
@@ -1697,28 +1697,28 @@ class AcadosOcpConstraints:
     # bounds on x at shooting node N
     @lbx_e.setter
     def lbx_e(self, lbx_e):
-        if isinstance(lbx_e, np.ndarray):
+        if type(lbx_e) == np.ndarray:
             self.__lbx_e = lbx_e
         else:
             raise Exception('Invalid lbx_e value. Exiting.')
 
     @ubx_e.setter
     def ubx_e(self, ubx_e):
-        if isinstance(ubx_e, np.ndarray):
+        if type(ubx_e) == np.ndarray:
             self.__ubx_e = ubx_e
         else:
             raise Exception('Invalid ubx_e value. Exiting.')
 
     @idxbx_e.setter
     def idxbx_e(self, idxbx_e):
-        if isinstance(idxbx_e, np.ndarray):
+        if type(idxbx_e) == np.ndarray:
             self.__idxbx_e = idxbx_e
         else:
             raise Exception('Invalid idxbx_e value. Exiting.')
 
     @Jbx_e.setter
     def Jbx_e(self, Jbx_e):
-        if isinstance(Jbx_e, np.ndarray):
+        if type(Jbx_e) == np.ndarray:
             self.__idxbx_e = J_to_idx(Jbx_e)
         else:
             raise Exception('Invalid Jbx_e value. Exiting.')
@@ -1742,14 +1742,14 @@ class AcadosOcpConstraints:
 
     @lg.setter
     def lg(self, lg):
-        if isinstance(lg, np.ndarray):
+        if type(lg) == np.ndarray:
             self.__lg = lg
         else:
             raise Exception('Invalid lg value. Exiting.')
 
     @ug.setter
     def ug(self, ug):
-        if isinstance(ug, np.ndarray):
+        if type(ug) == np.ndarray:
             self.__ug = ug
         else:
             raise Exception('Invalid ug value. Exiting.')
@@ -1765,14 +1765,14 @@ class AcadosOcpConstraints:
 
     @lg_e.setter
     def lg_e(self, lg_e):
-        if isinstance(lg_e, np.ndarray):
+        if type(lg_e) == np.ndarray:
             self.__lg_e = lg_e
         else:
             raise Exception('Invalid lg_e value. Exiting.')
 
     @ug_e.setter
     def ug_e(self, ug_e):
-        if isinstance(ug_e, np.ndarray):
+        if type(ug_e) == np.ndarray:
             self.__ug_e = ug_e
         else:
             raise Exception('Invalid ug_e value. Exiting.')
@@ -1780,14 +1780,14 @@ class AcadosOcpConstraints:
     # nonlinear constraints
     @lh.setter
     def lh(self, lh):
-        if isinstance(lh, np.ndarray):
+        if type(lh) == np.ndarray:
             self.__lh = lh
         else:
             raise Exception('Invalid lh value. Exiting.')
 
     @uh.setter
     def uh(self, uh):
-        if isinstance(uh, np.ndarray):
+        if type(uh) == np.ndarray:
             self.__uh = uh
         else:
             raise Exception('Invalid uh value. Exiting.')
@@ -1795,14 +1795,14 @@ class AcadosOcpConstraints:
     # convex-over-nonlinear constraints
     @lphi.setter
     def lphi(self, lphi):
-        if isinstance(lphi, np.ndarray):
+        if type(lphi) == np.ndarray:
             self.__lphi = lphi
         else:
             raise Exception('Invalid lphi value. Exiting.')
 
     @uphi.setter
     def uphi(self, uphi):
-        if isinstance(uphi, np.ndarray):
+        if type(uphi) == np.ndarray:
             self.__uphi = uphi
         else:
             raise Exception('Invalid uphi value. Exiting.')
@@ -1810,14 +1810,14 @@ class AcadosOcpConstraints:
     # nonlinear constraints at shooting node N
     @lh_e.setter
     def lh_e(self, lh_e):
-        if isinstance(lh_e, np.ndarray):
+        if type(lh_e) == np.ndarray:
             self.__lh_e = lh_e
         else:
             raise Exception('Invalid lh_e value. Exiting.')
 
     @uh_e.setter
     def uh_e(self, uh_e):
-        if isinstance(uh_e, np.ndarray):
+        if type(uh_e) == np.ndarray:
             self.__uh_e = uh_e
         else:
             raise Exception('Invalid uh_e value. Exiting.')
@@ -1825,14 +1825,14 @@ class AcadosOcpConstraints:
     # convex-over-nonlinear constraints at shooting node N
     @lphi_e.setter
     def lphi_e(self, lphi_e):
-        if isinstance(lphi_e, np.ndarray):
+        if type(lphi_e) == np.ndarray:
             self.__lphi_e = lphi_e
         else:
             raise Exception('Invalid lphi_e value. Exiting.')
 
     @uphi_e.setter
     def uphi_e(self, uphi_e):
-        if isinstance(uphi_e, np.ndarray):
+        if type(uphi_e) == np.ndarray:
             self.__uphi_e = uphi_e
         else:
             raise Exception('Invalid uphi_e value. Exiting.')
@@ -1841,21 +1841,21 @@ class AcadosOcpConstraints:
     # soft bounds on x
     @lsbx.setter
     def lsbx(self, lsbx):
-        if isinstance(lsbx, np.ndarray):
+        if type(lsbx) == np.ndarray:
             self.__lsbx = lsbx
         else:
             raise Exception('Invalid lsbx value. Exiting.')
 
     @usbx.setter
     def usbx(self, usbx):
-        if isinstance(usbx, np.ndarray):
+        if type(usbx) == np.ndarray:
             self.__usbx = usbx
         else:
             raise Exception('Invalid usbx value. Exiting.')
 
     @idxsbx.setter
     def idxsbx(self, idxsbx):
-        if isinstance(idxsbx, np.ndarray):
+        if type(idxsbx) == np.ndarray:
             self.__idxsbx = idxsbx
         else:
             raise Exception('Invalid idxsbx value. Exiting.')
@@ -1870,28 +1870,28 @@ class AcadosOcpConstraints:
     # soft bounds on u
     @lsbu.setter
     def lsbu(self, lsbu):
-        if isinstance(lsbu, np.ndarray):
+        if type(lsbu) == np.ndarray:
             self.__lsbu = lsbu
         else:
             raise Exception('Invalid lsbu value. Exiting.')
 
     @usbu.setter
     def usbu(self, usbu):
-        if isinstance(usbu, np.ndarray):
+        if type(usbu) == np.ndarray:
             self.__usbu = usbu
         else:
             raise Exception('Invalid usbu value. Exiting.')
 
     @idxsbu.setter
     def idxsbu(self, idxsbu):
-        if isinstance(idxsbu, np.ndarray):
+        if type(idxsbu) == np.ndarray:
             self.__idxsbu = idxsbu
         else:
             raise Exception('Invalid idxsbu value. Exiting.')
 
     @Jsbu.setter
     def Jsbu(self, Jsbu):
-        if isinstance(Jsbu, np.ndarray):
+        if type(Jsbu) == np.ndarray:
             self.__idxsbu = J_to_idx_slack(Jsbu)
         else:
             raise Exception('Invalid Jsbu value. Exiting.')
@@ -1899,28 +1899,28 @@ class AcadosOcpConstraints:
     # soft bounds on x at shooting node N
     @lsbx_e.setter
     def lsbx_e(self, lsbx_e):
-        if isinstance(lsbx_e, np.ndarray):
+        if type(lsbx_e) == np.ndarray:
             self.__lsbx_e = lsbx_e
         else:
             raise Exception('Invalid lsbx_e value. Exiting.')
 
     @usbx_e.setter
     def usbx_e(self, usbx_e):
-        if isinstance(usbx_e, np.ndarray):
+        if type(usbx_e) == np.ndarray:
             self.__usbx_e = usbx_e
         else:
             raise Exception('Invalid usbx_e value. Exiting.')
 
     @idxsbx_e.setter
     def idxsbx_e(self, idxsbx_e):
-        if isinstance(idxsbx_e, np.ndarray):
+        if type(idxsbx_e) == np.ndarray:
             self.__idxsbx_e = idxsbx_e
         else:
             raise Exception('Invalid idxsbx_e value. Exiting.')
 
     @Jsbx_e.setter
     def Jsbx_e(self, Jsbx_e):
-        if isinstance(Jsbx_e, np.ndarray):
+        if type(Jsbx_e) == np.ndarray:
             self.__idxsbx_e = J_to_idx_slack(Jsbx_e)
         else:
             raise Exception('Invalid Jsbx_e value. Exiting.')
@@ -1959,21 +1959,21 @@ class AcadosOcpConstraints:
     # soft bounds on nonlinear constraints
     @lsh.setter
     def lsh(self, lsh):
-        if isinstance(lsh, np.ndarray):
+        if type(lsh) == np.ndarray:
             self.__lsh = lsh
         else:
             raise Exception('Invalid lsh value. Exiting.')
 
     @ush.setter
     def ush(self, ush):
-        if isinstance(ush, np.ndarray):
+        if type(ush) == np.ndarray:
             self.__ush = ush
         else:
             raise Exception('Invalid ush value. Exiting.')
 
     @idxsh.setter
     def idxsh(self, idxsh):
-        if isinstance(idxsh, np.ndarray):
+        if type(idxsh) == np.ndarray:
             self.__idxsh = idxsh
         else:
             raise Exception('Invalid idxsh value. Exiting.')
@@ -1989,21 +1989,21 @@ class AcadosOcpConstraints:
     # soft bounds on convex-over-nonlinear constraints
     @lsphi.setter
     def lsphi(self, lsphi):
-        if isinstance(lsphi, np.ndarray):
+        if type(lsphi) == np.ndarray:
             self.__lsphi = lsphi
         else:
             raise Exception('Invalid lsphi value. Exiting.')
 
     @usphi.setter
     def usphi(self, usphi):
-        if isinstance(usphi, np.ndarray):
+        if type(usphi) == np.ndarray:
             self.__usphi = usphi
         else:
             raise Exception('Invalid usphi value. Exiting.')
 
     @idxsphi.setter
     def idxsphi(self, idxsphi):
-        if isinstance(idxsphi, np.ndarray):
+        if type(idxsphi) == np.ndarray:
             self.__idxsphi = idxsphi
         else:
             raise Exception('Invalid idxsphi value. Exiting.')
@@ -2151,11 +2151,6 @@ class AcadosOcpOptions:
         self.__ext_cost_num_hess = 0
         self.__alpha_min = 0.05
         self.__alpha_reduction = 0.7
-        self.__line_search_use_sufficient_descent = 0
-        self.__globalization_use_SOC = 0
-        self.__full_step_dual = 0
-        self.__eps_sufficient_descent = 1e-4
-        self.__hpipm_mode = 'BALANCE'
 
 
     @property
@@ -2165,21 +2160,6 @@ class AcadosOcpOptions:
         Default: 'PARTIAL_CONDENSING_HPIPM'.
         """
         return self.__qp_solver
-
-    @property
-    def hpipm_mode(self):
-        """
-        Mode of HPIPM to be used,
-
-        String in ('BALANCE', 'SPEED_ABS', 'SPEED', 'ROBUST').
-
-        Default: 'BALANCE'.
-
-        see https://cdn.syscop.de/publications/Frison2020a.pdf
-        and the HPIPM code:
-        https://github.com/giaf/hpipm/blob/master/ocp_qp/x_ocp_qp_ipm.c#L69
-        """
-        return self.__hpipm_mode
 
     @property
     def hessian_approx(self):
@@ -2388,43 +2368,6 @@ class AcadosOcpOptions:
         return self.__alpha_reduction
 
     @property
-    def line_search_use_sufficient_descent(self):
-        """
-        Determines if sufficient descent (Armijo) condition is used in line search.
-        Type: int; 0 or 1;
-        default: 0.
-        """
-        return self.__line_search_use_sufficient_descent
-
-    @property
-    def eps_sufficient_descent(self):
-        """
-        Factor for sufficient descent (Armijo) conditon, see line_search_use_sufficient_descent.
-        Type: float,
-        default: 1e-4.
-        """
-        return self.__eps_sufficient_descent
-
-    @property
-    def globalization_use_SOC(self):
-        """
-        Determines if second order correction (SOC) is done when using MERIT_BACKTRACKING.
-        SOC is done if preliminary line search does not return full step.
-        Type: int; 0 or 1;
-        default: 0.
-        """
-        return self.__globalization_use_SOC
-
-    @property
-    def full_step_dual(self):
-        """
-        Determines if dual variables are updated with full steps (alpha=1.0) when primal variables are updated with smaller step.
-        Type: int; 0 or 1;
-        default: 0.
-        """
-        return self.__full_step_dual
-
-    @property
     def nlp_solver_tol_ineq(self):
         """NLP solver inequality tolerance"""
         return self.__nlp_solver_tol_ineq
@@ -2557,15 +2500,6 @@ class AcadosOcpOptions:
             raise Exception('Invalid collocation_type value. Possible values are:\n\n' \
                     + ',\n'.join(collocation_types) + '.\n\nYou have: ' + collocation_type + '.\n\nExiting.')
 
-    @hpipm_mode.setter
-    def hpipm_mode(self, hpipm_mode):
-        hpipm_modes = ('BALANCE', 'SPEED_ABS', 'SPEED', 'ROBUST')
-        if hpipm_mode in hpipm_modes:
-            self.__hpipm_mode = hpipm_mode
-        else:
-            raise Exception('Invalid hpipm_mode value. Possible values are:\n\n' \
-                    + ',\n'.join(hpipm_modes) + '.\n\nYou have: ' + hpipm_mode + '.\n\nExiting.')
-
     @hessian_approx.setter
     def hessian_approx(self, hessian_approx):
         hessian_approxs = ('GAUSS_NEWTON', 'EXACT')
@@ -2590,23 +2524,12 @@ class AcadosOcpOptions:
 
     @time_steps.setter
     def time_steps(self, time_steps):
-        if isinstance(time_steps, np.ndarray):
-            if len(time_steps.shape) == 1:
-                    self.__time_steps = time_steps
-            else:
-                raise Exception('Invalid time_steps, expected np.ndarray of shape (N,).')
-        else:
-            raise Exception('Invalid time_steps, expected np.ndarray.')
+        self.__time_steps = time_steps
 
     @shooting_nodes.setter
     def shooting_nodes(self, shooting_nodes):
-        if isinstance(shooting_nodes, np.ndarray):
-            if len(shooting_nodes.shape) == 1:
-                self.__shooting_nodes = shooting_nodes
-            else:
-                raise Exception('Invalid shooting_nodes, expected np.ndarray of shape (N+1,).')
-        else:
-            raise Exception('Invalid shooting_nodes, expected np.ndarray.')
+        self.__shooting_nodes = shooting_nodes
+
 
     @Tsim.setter
     def Tsim(self, Tsim):
@@ -2614,12 +2537,7 @@ class AcadosOcpOptions:
 
     @globalization.setter
     def globalization(self, globalization):
-        globalization_types = ('MERIT_BACKTRACKING', 'FIXED_STEP')
-        if globalization in globalization_types:
-            self.__globalization = globalization
-        else:
-            raise Exception('Invalid globalization value. Possible values are:\n\n' \
-                    + ',\n'.join(globalization_types) + '.\n\nYou have: ' + globalization + '.\n\nExiting.')
+        self.__globalization = globalization
 
     @alpha_min.setter
     def alpha_min(self, alpha_min):
@@ -2629,38 +2547,10 @@ class AcadosOcpOptions:
     def alpha_reduction(self, alpha_reduction):
         self.__alpha_reduction = alpha_reduction
 
-    @line_search_use_sufficient_descent.setter
-    def line_search_use_sufficient_descent(self, line_search_use_sufficient_descent):
-        if line_search_use_sufficient_descent in [0, 1]:
-            self.__line_search_use_sufficient_descent = line_search_use_sufficient_descent
-        else:
-            raise Exception(f'Invalid value for line_search_use_sufficient_descent. Possible values are 0, 1, got {line_search_use_sufficient_descent}')
-
-    @globalization_use_SOC.setter
-    def globalization_use_SOC(self, globalization_use_SOC):
-        if globalization_use_SOC in [0, 1]:
-            self.__globalization_use_SOC = globalization_use_SOC
-        else:
-            raise Exception(f'Invalid value for globalization_use_SOC. Possible values are 0, 1, got {globalization_use_SOC}')
-
-    @full_step_dual.setter
-    def full_step_dual(self, full_step_dual):
-        if full_step_dual in [0, 1]:
-            self.__full_step_dual = full_step_dual
-        else:
-            raise Exception(f'Invalid value for full_step_dual. Possible values are 0, 1, got {full_step_dual}')
-
-    @eps_sufficient_descent.setter
-    def eps_sufficient_descent(self, eps_sufficient_descent):
-        if isinstance(eps_sufficient_descent, float) and eps_sufficient_descent > 0:
-            self.__eps_sufficient_descent = eps_sufficient_descent
-        else:
-            raise Exception('Invalid eps_sufficient_descent value. eps_sufficient_descent must be a positive float. Exiting')
-
     @sim_method_num_stages.setter
     def sim_method_num_stages(self, sim_method_num_stages):
 
-        # if isinstance(sim_method_num_stages, int):
+        # if type(sim_method_num_stages) == int:
         #     self.__sim_method_num_stages = sim_method_num_stages
         # else:
         #     raise Exception('Invalid sim_method_num_stages value. sim_method_num_stages must be an integer. Exiting.')
@@ -2670,7 +2560,7 @@ class AcadosOcpOptions:
     @sim_method_num_steps.setter
     def sim_method_num_steps(self, sim_method_num_steps):
 
-        # if isinstance(sim_method_num_steps, int):
+        # if type(sim_method_num_steps) == int:
         #     self.__sim_method_num_steps = sim_method_num_steps
         # else:
         #     raise Exception('Invalid sim_method_num_steps value. sim_method_num_steps must be an integer. Exiting.')
@@ -2680,7 +2570,7 @@ class AcadosOcpOptions:
     @sim_method_newton_iter.setter
     def sim_method_newton_iter(self, sim_method_newton_iter):
 
-        if isinstance(sim_method_newton_iter, int):
+        if type(sim_method_newton_iter) == int:
             self.__sim_method_newton_iter = sim_method_newton_iter
         else:
             raise Exception('Invalid sim_method_newton_iter value. sim_method_newton_iter must be an integer. Exiting.')
@@ -2703,7 +2593,7 @@ class AcadosOcpOptions:
 
     @nlp_solver_step_length.setter
     def nlp_solver_step_length(self, nlp_solver_step_length):
-        if isinstance(nlp_solver_step_length, float) and nlp_solver_step_length > 0:
+        if type(nlp_solver_step_length) == float and nlp_solver_step_length > 0:
             self.__nlp_solver_step_length = nlp_solver_step_length
         else:
             raise Exception('Invalid nlp_solver_step_length value. nlp_solver_step_length must be a positive float. Exiting')
@@ -2724,7 +2614,7 @@ class AcadosOcpOptions:
 
     @qp_solver_cond_N.setter
     def qp_solver_cond_N(self, qp_solver_cond_N):
-        if isinstance(qp_solver_cond_N, int) and qp_solver_cond_N >= 0:
+        if isinstance(qp_solver_cond_N, int) and qp_solver_cond_N > 0:
             self.__qp_solver_cond_N = qp_solver_cond_N
         else:
             raise Exception('Invalid qp_solver_cond_N value. qp_solver_cond_N must be a positive int. Exiting')
@@ -2815,21 +2705,21 @@ class AcadosOcpOptions:
     @nlp_solver_max_iter.setter
     def nlp_solver_max_iter(self, nlp_solver_max_iter):
 
-        if isinstance(nlp_solver_max_iter, int) and nlp_solver_max_iter > 0:
+        if type(nlp_solver_max_iter) == int and nlp_solver_max_iter > 0:
             self.__nlp_solver_max_iter = nlp_solver_max_iter
         else:
             raise Exception('Invalid nlp_solver_max_iter value. nlp_solver_max_iter must be a positive int. Exiting')
 
     @print_level.setter
     def print_level(self, print_level):
-        if isinstance(print_level, int) and print_level >= 0:
+        if type(print_level) == int and print_level >= 0:
             self.__print_level = print_level
         else:
             raise Exception('Invalid print_level value. print_level takes one of the values >=0. Exiting')
 
     @model_external_shared_lib_dir.setter
     def model_external_shared_lib_dir(self, model_external_shared_lib_dir):
-        if isinstance(model_external_shared_lib_dir, str) :
+        if type(model_external_shared_lib_dir) == str :
             self.__model_external_shared_lib_dir = model_external_shared_lib_dir
         else:
             raise Exception('Invalid model_external_shared_lib_dir value. Str expected.' \
@@ -2837,7 +2727,7 @@ class AcadosOcpOptions:
 
     @model_external_shared_lib_name.setter
     def model_external_shared_lib_name(self, model_external_shared_lib_name):
-        if isinstance(model_external_shared_lib_name, str) :
+        if type(model_external_shared_lib_name) == str :
             if model_external_shared_lib_name[-3:] == '.so' : 
                 raise Exception('Invalid model_external_shared_lib_name value. Remove the .so extension.' \
             + '.\n\nYou have: ' + type(model_external_shared_lib_name) + '.\n\nExiting.')
@@ -2915,13 +2805,10 @@ class AcadosOcp:
         self.solver_options = AcadosOcpOptions()
         """Solver Options, type :py:class:`acados_template.acados_ocp.AcadosOcpOptions`"""
 		
-        self.acados_include_path = os.path.join(acados_path, 'include').replace(os.sep, '/') # the replace part is important on Windows for CMake
-        """Path to acados include directory (set automatically), type: `string`"""
-        self.acados_lib_path = os.path.join(acados_path, 'lib').replace(os.sep, '/') # the replace part is important on Windows for CMake
-        """Path to where acados library is located, type: `string`"""
-
-        import numpy
-        self.cython_include_dirs = numpy.get_include()
+        self.acados_include_path = f'{acados_path}/include'
+        """Path to acados include directory, type: string"""
+        self.acados_lib_path = f'{acados_path}/lib'
+        """Path to where acados library is located, type: string"""
 
         self.__parameter_values = np.array([])
         self.__problem_class = 'OCP'

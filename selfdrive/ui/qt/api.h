@@ -5,7 +5,7 @@
 #include <QString>
 #include <QTimer>
 
-#include "common/util.h"
+#include "selfdrive/common/util.h"
 
 namespace CommaApi {
 
@@ -31,7 +31,7 @@ public:
   bool timeout() const;
 
 signals:
-  void requestDone(const QString &response, bool success, QNetworkReply::NetworkError error);
+  void requestDone(const QString &response, bool success);
 
 protected:
   QNetworkReply *reply = nullptr;

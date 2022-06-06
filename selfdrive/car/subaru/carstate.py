@@ -1,7 +1,7 @@
 import copy
 from cereal import car
 from opendbc.can.can_define import CANDefine
-from common.conversions import Conversions as CV
+from selfdrive.config import Conversions as CV
 from selfdrive.car.interfaces import CarStateBase
 from opendbc.can.parser import CANParser
 from selfdrive.car.subaru.values import DBC, STEER_THRESHOLD, CAR, PREGLOBAL_CARS
@@ -94,7 +94,7 @@ class CarState(CarStateBase):
                         cp.vl["BodyInfo"]["DOOR_OPEN_RL"],
                         cp.vl["BodyInfo"]["DOOR_OPEN_FR"],
                         cp.vl["BodyInfo"]["DOOR_OPEN_FL"]])
-    ret.steerFaultPermanent = cp.vl["Steering_Torque"]["Steer_Error_1"] == 1
+    ret.steerError = cp.vl["Steering_Torque"]["Steer_Error_1"] == 1
     self.throttle_msg = copy.copy(cp.vl["Throttle"])
 
     if self.car_fingerprint in PREGLOBAL_CARS:
@@ -104,7 +104,7 @@ class CarState(CarStateBase):
       self.car_follow = cp_cam.vl["ES_Distance"]["Car_Follow"]
       self.close_distance = cp_cam.vl["ES_Distance"]["Close_Distance"]
     else:
-      ret.steerFaultTemporary = cp.vl["Steering_Torque"]["Steer_Warning"] == 1
+      ret.steerWarning = cp.vl["Steering_Torque"]["Steer_Warning"] == 1
       ret.cruiseState.nonAdaptive = cp_cam.vl["ES_DashStatus"]["Conventional_Cruise"] == 1
       self.cruise_state = cp_cam.vl["ES_DashStatus"]["Cruise_State"]
       self.brake_pedal_msg = copy.copy(cp.vl["Brake_Pedal"])
@@ -124,18 +124,18 @@ class CarState(CarStateBase):
   @staticmethod
   def get_can_parser(CP):
     signals = [
-      # sig_name, sig_address
-      ("Steer_Torque_Sensor", "Steering_Torque"),
-      ("Steering_Angle", "Steering_Torque"),
-      ("Steer_Error_1", "Steering_Torque"),
-      ("Brake_Pedal", "Brake_Pedal"),
-      ("LEFT_BLINKER", "Dashlights"),
-      ("RIGHT_BLINKER", "Dashlights"),
-      ("SEATBELT_FL", "Dashlights"),
-      ("DOOR_OPEN_FR", "BodyInfo"),
-      ("DOOR_OPEN_FL", "BodyInfo"),
-      ("DOOR_OPEN_RR", "BodyInfo"),
-      ("DOOR_OPEN_RL", "BodyInfo"),
+      # sig_name, sig_address, default
+      ("Steer_Torque_Sensor", "Steering_Torque", 0),
+      ("Steering_Angle", "Steering_Torque", 0),
+      ("Steer_Error_1", "Steering_Torque", 0),
+      ("Brake_Pedal", "Brake_Pedal", 0),
+      ("LEFT_BLINKER", "Dashlights", 0),
+      ("RIGHT_BLINKER", "Dashlights", 0),
+      ("SEATBELT_FL", "Dashlights", 0),
+      ("DOOR_OPEN_FR", "BodyInfo", 1),
+      ("DOOR_OPEN_FL", "BodyInfo", 1),
+      ("DOOR_OPEN_RR", "BodyInfo", 1),
+      ("DOOR_OPEN_RL", "BodyInfo", 1),
     ]
     checks = [
       # sig_address, frequency
@@ -147,47 +147,49 @@ class CarState(CarStateBase):
     # Wheel_Speeds is on can1 for OUTBACK
     if CP.carFingerprint not in [CAR.OUTBACK, CAR.LEGACY]:
       signals += [
-        ("FL", "Wheel_Speeds"),
-        ("FR", "Wheel_Speeds"),
-        ("RL", "Wheel_Speeds"),
-        ("RR", "Wheel_Speeds"),
+        ("FL", "Wheel_Speeds", 0),
+        ("FR", "Wheel_Speeds", 0),
+        ("RL", "Wheel_Speeds", 0),
+        ("RR", "Wheel_Speeds", 0),
       ]
       checks.append(("Wheel_Speeds", 50))
 
     # Transmission is on can1 for CROSSTREK_2020H
     if CP.carFingerprint != CAR.CROSSTREK_2020H:
-      signals.append(("Gear", "Transmission"))
+      signals.append(("Gear", "Transmission", 0))
       checks.append(("Transmission", 100))
 
     # CruiseControl is on can1 for OUTBACK and not used for CROSSTREK_2020H
     if CP.carFingerprint not in [CAR.OUTBACK, CAR.LEGACY, CAR.CROSSTREK_2020H]:
-      signals.append(("Cruise_On", "CruiseControl"))
-      signals.append(("Cruise_Activated", "CruiseControl"))
+      signals.append(("Cruise_On", "CruiseControl", 0))
+      signals.append(("Cruise_Activated", "CruiseControl", 0))
 
     if CP.carFingerprint in PREGLOBAL_CARS:
       signals += [
-        ("Throttle_Pedal", "Throttle"),
-        ("Counter", "Throttle"),
-        ("Signal1", "Throttle"),
-        ("Not_Full_Throttle", "Throttle"),
-        ("Signal2", "Throttle"),
-        ("Engine_RPM", "Throttle"),
-        ("Off_Throttle", "Throttle"),
-        ("Signal3", "Throttle"),
-        ("Throttle_Cruise", "Throttle"),
-        ("Throttle_Combo", "Throttle"),
-        ("Throttle_Body", "Throttle"),
-        ("Off_Throttle_2", "Throttle"),
-        ("Signal4", "Throttle"),
+        ("Throttle_Pedal", "Throttle", 0),
+        ("Counter", "Throttle", 0),
+        ("Signal1", "Throttle", 0),
+        ("Not_Full_Throttle", "Throttle", 0),
+        ("Signal2", "Throttle", 0),
+        ("Engine_RPM", "Throttle", 0),
+        ("Off_Throttle", "Throttle", 0),
+        ("Signal3", "Throttle", 0),
+        ("Throttle_Cruise", "Throttle", 0),
+        ("Throttle_Combo", "Throttle", 0),
+        ("Throttle_Body", "Throttle", 0),
+        ("Off_Throttle_2", "Throttle", 0),
+        ("Signal4", "Throttle", 0),
 
-        ("UNITS", "Dash_State2"),
-        ("Steering_Angle", "Steering"),
+        ("UNITS", "Dash_State2", 0),
+        ("Steering_Angle", "Steering", 0),
       ]
 
-      checks.append(("BodyInfo", 1))
-      checks.append(("CruiseControl", 50))
-      checks.append(("Dash_State2", 1))
-      checks.append(("Steering", 50))
+      checks += [
+        ("BodyInfo", 1),
+        ("CruiseControl", 50),
+        ("Dash_State2", 1),
+        ("Steering", 50),
+      ]
 
       if CP.carFingerprint in [CAR.FORESTER_PREGLOBAL, CAR.LEVORG_PREGLOBAL, CAR.WRX_PREGLOBAL]:
         checks.append(("Dashlights", 20))
@@ -196,33 +198,33 @@ class CarState(CarStateBase):
 
     else:
       signals += [
-        ("Counter", "Throttle"),
-        ("Signal1", "Throttle"),
-        ("Engine_RPM", "Throttle"),
-        ("Signal2", "Throttle"),
-        ("Throttle_Pedal", "Throttle"),
-        ("Throttle_Cruise", "Throttle"),
-        ("Throttle_Combo", "Throttle"),
-        ("Signal1", "Throttle"),
-        ("Off_Accel", "Throttle"),
+        ("Counter", "Throttle", 0),
+        ("Signal1", "Throttle", 0),
+        ("Engine_RPM", "Throttle", 0),
+        ("Signal2", "Throttle", 0),
+        ("Throttle_Pedal", "Throttle", 0),
+        ("Throttle_Cruise", "Throttle", 0),
+        ("Throttle_Combo", "Throttle", 0),
+        ("Signal1", "Throttle", 0),
+        ("Off_Accel", "Throttle", 0),
 
-        ("Counter", "Brake_Pedal"),
-        ("Signal1", "Brake_Pedal"),
-        ("Speed", "Brake_Pedal"),
-        ("Signal2", "Brake_Pedal"),
-        ("Brake_Lights", "Brake_Pedal"),
-        ("Signal3", "Brake_Pedal"),
-        ("Signal4", "Brake_Pedal"),
+        ("Counter", "Brake_Pedal", 0),
+        ("Signal1", "Brake_Pedal", 0),
+        ("Speed", "Brake_Pedal", 0),
+        ("Signal2", "Brake_Pedal", 0),
+        ("Brake_Lights", "Brake_Pedal", 0),
+        ("Signal3", "Brake_Pedal", 0),
+        ("Signal4", "Brake_Pedal", 0),
 
-        ("Steer_Warning", "Steering_Torque"),
-        ("UNITS", "Dashlights"),
+        ("Steer_Warning", "Steering_Torque", 0),
+        ("UNITS", "Dashlights", 0),
       ]
       checks.append(("Dashlights", 10))
       checks.append(("BodyInfo", 10))
 
       # Brake_Status is on can1 for OUTBACK
       if CP.carFingerprint not in [CAR.OUTBACK, CAR.LEGACY]:
-        signals.append(("Brake", "Brake_Status"))
+        signals.append(("Brake", "Brake_Status", 0))
         checks.append(("Brake_Status", 50))
 
       # CruiseControl is on can1 for OUTBACK and nod used for CROSSTREK_2020H
@@ -231,10 +233,10 @@ class CarState(CarStateBase):
 
     if CP.enableBsm:
       signals += [
-        ("L_ADJACENT", "BSD_RCTA"),
-        ("R_ADJACENT", "BSD_RCTA"),
-        ("L_APPROACHING", "BSD_RCTA"),
-        ("R_APPROACHING", "BSD_RCTA"),
+        ("L_ADJACENT", "BSD_RCTA", 0),
+        ("R_ADJACENT", "BSD_RCTA", 0),
+        ("L_APPROACHING", "BSD_RCTA", 0),
+        ("R_APPROACHING", "BSD_RCTA", 0),
       ]
       checks.append(("BSD_RCTA", 17))
 
@@ -247,34 +249,39 @@ class CarState(CarStateBase):
 
     if CP.carFingerprint == CAR.CROSSTREK_2020H:
       signals += [
-        ("Throttle_Pedal", "Throttle_Hybrid"),
-        ("Brake", "Brake_Hybrid"),
-        ("Gear", "Transmission"),
+        ("Throttle_Pedal", "Throttle_Hybrid", 0),
+        ("Brake", "Brake_Hybrid", 0),
+        ("Gear", "Transmission", 0),
       ]
 
-      checks.append(("Throttle_Hybrid", 50))
-      checks.append(("Brake_Hybrid", 40))
-      checks.append(("Transmission", 50))
+      checks += [
+        # sig_address, frequency
+        ("Throttle_Hybrid", 50),
+        ("Brake_Hybrid", 40),
+        ("Transmission", 50),
+      ]
 
       return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, 1)
 
     elif CP.carFingerprint in [CAR.OUTBACK, CAR.LEGACY]:
       signals += [
-        ("Cruise_On", "CruiseControl"),
-        ("Cruise_Activated", "CruiseControl"),
-        ("FL", "Wheel_Speeds"),
-        ("FR", "Wheel_Speeds"),
-        ("RL", "Wheel_Speeds"),
-        ("RR", "Wheel_Speeds"),
-        ("Brake", "Brake_Status"),
-        ("Car_Follow", "ES_Distance"),
-        ("Close_Distance", "ES_Distance"),
+        ("Cruise_On", "CruiseControl", 0),
+        ("Cruise_Activated", "CruiseControl", 0),
+        ("FL", "Wheel_Speeds", 0),
+        ("FR", "Wheel_Speeds", 0),
+        ("RL", "Wheel_Speeds", 0),
+        ("RR", "Wheel_Speeds", 0),
+        ("Brake", "Brake_Status", 0),
+        ("Car_Follow", "ES_Distance", 0),
+        ("Close_Distance", "ES_Distance", 0),
       ]
 
-      checks.append(("CruiseControl", 20))
-      checks.append(("ES_Distance", 20))
-      checks.append(("Wheel_Speeds", 50))
-      checks.append(("Brake_Status", 50))
+      checks += [
+        ("CruiseControl", 20),
+        ("ES_Distance", 20),
+        ("Wheel_Speeds", 50),
+        ("Brake_Status", 50),
+      ]
 
       return CANParser(DBC[CP.carFingerprint]["pt"], signals, checks, 1)
 
@@ -285,102 +292,98 @@ class CarState(CarStateBase):
   def get_cam_can_parser(CP):
     if CP.carFingerprint in PREGLOBAL_CARS:
       signals = [
-        ("Cruise_Set_Speed", "ES_DashStatus"),
-        ("Not_Ready_Startup", "ES_DashStatus"),
-        ("Car_Follow", "ES_DashStatus"),
+        ("Cruise_Set_Speed", "ES_DashStatus", 0),
+        ("Not_Ready_Startup", "ES_DashStatus", 0),
+        ("Car_Follow", "ES_DashStatus", 0),
 
-        ("Cruise_Throttle", "ES_Distance"),
-        ("Signal1", "ES_Distance"),
-        ("Car_Follow", "ES_Distance"),
-        ("Signal2", "ES_Distance"),
-        ("Brake_On", "ES_Distance"),
-        ("Distance_Swap", "ES_Distance"),
-        ("Standstill", "ES_Distance"),
-        ("Signal3", "ES_Distance"),
-        ("Close_Distance", "ES_Distance"),
-        ("Signal4", "ES_Distance"),
-        ("Standstill_2", "ES_Distance"),
-        ("Cruise_Fault", "ES_Distance"),
-        ("Signal5", "ES_Distance"),
-        ("Counter", "ES_Distance"),
-        ("Signal6", "ES_Distance"),
-        ("Cruise_Button", "ES_Distance"),
-        ("Signal7", "ES_Distance"),
+        ("Cruise_Throttle", "ES_Distance", 0),
+        ("Signal1", "ES_Distance", 0),
+        ("Car_Follow", "ES_Distance", 0),
+        ("Signal2", "ES_Distance", 0),
+        ("Brake_On", "ES_Distance", 0),
+        ("Distance_Swap", "ES_Distance", 0),
+        ("Standstill", "ES_Distance", 0),
+        ("Signal3", "ES_Distance", 0),
+        ("Close_Distance", "ES_Distance", 0),
+        ("Signal4", "ES_Distance", 0),
+        ("Standstill_2", "ES_Distance", 0),
+        ("Cruise_Fault", "ES_Distance", 0),
+        ("Signal5", "ES_Distance", 0),
+        ("Counter", "ES_Distance", 0),
+        ("Signal6", "ES_Distance", 0),
+        ("Cruise_Button", "ES_Distance", 0),
+        ("Signal7", "ES_Distance", 0),
       ]
-      checks = [
-        ("ES_DashStatus", 20),
-        ("ES_Distance", 20),
-      ]
+      checks = [("ES_DashStatus", 20)]
+      checks.append(("ES_Distance", 20))
 
     else:
       signals = [
-        ("Counter", "ES_DashStatus"),
-        ("PCB_Off", "ES_DashStatus"),
-        ("LDW_Off", "ES_DashStatus"),
-        ("Signal1", "ES_DashStatus"),
-        ("Cruise_State_Msg", "ES_DashStatus"),
-        ("LKAS_State_Msg", "ES_DashStatus"),
-        ("Signal2", "ES_DashStatus"),
-        ("Cruise_Soft_Disable", "ES_DashStatus"),
-        ("EyeSight_Status_Msg", "ES_DashStatus"),
-        ("Signal3", "ES_DashStatus"),
-        ("Cruise_Distance", "ES_DashStatus"),
-        ("Signal4", "ES_DashStatus"),
-        ("Conventional_Cruise", "ES_DashStatus"),
-        ("Signal5", "ES_DashStatus"),
-        ("Cruise_Disengaged", "ES_DashStatus"),
-        ("Cruise_Activated", "ES_DashStatus"),
-        ("Signal6", "ES_DashStatus"),
-        ("Cruise_Set_Speed", "ES_DashStatus"),
-        ("Cruise_Fault", "ES_DashStatus"),
-        ("Cruise_On", "ES_DashStatus"),
-        ("Display_Own_Car", "ES_DashStatus"),
-        ("Brake_Lights", "ES_DashStatus"),
-        ("Car_Follow", "ES_DashStatus"),
-        ("Signal7", "ES_DashStatus"),
-        ("Far_Distance", "ES_DashStatus"),
-        ("Cruise_State", "ES_DashStatus"),
+        ("Counter", "ES_DashStatus", 0),
+        ("PCB_Off", "ES_DashStatus", 0),
+        ("LDW_Off", "ES_DashStatus", 0),
+        ("Signal1", "ES_DashStatus", 0),
+        ("Cruise_State_Msg", "ES_DashStatus", 0),
+        ("LKAS_State_Msg", "ES_DashStatus", 0),
+        ("Signal2", "ES_DashStatus", 0),
+        ("Cruise_Soft_Disable", "ES_DashStatus", 0),
+        ("EyeSight_Status_Msg", "ES_DashStatus", 0),
+        ("Signal3", "ES_DashStatus", 0),
+        ("Cruise_Distance", "ES_DashStatus", 0),
+        ("Signal4", "ES_DashStatus", 0),
+        ("Conventional_Cruise", "ES_DashStatus", 0),
+        ("Signal5", "ES_DashStatus", 0),
+        ("Cruise_Disengaged", "ES_DashStatus", 0),
+        ("Cruise_Activated", "ES_DashStatus", 0),
+        ("Signal6", "ES_DashStatus", 0),
+        ("Cruise_Set_Speed", "ES_DashStatus", 0),
+        ("Cruise_Fault", "ES_DashStatus", 0),
+        ("Cruise_On", "ES_DashStatus", 0),
+        ("Display_Own_Car", "ES_DashStatus", 0),
+        ("Brake_Lights", "ES_DashStatus", 0),
+        ("Car_Follow", "ES_DashStatus", 0),
+        ("Signal7", "ES_DashStatus", 0),
+        ("Far_Distance", "ES_DashStatus", 0),
+        ("Cruise_State", "ES_DashStatus", 0),
 
-        ("Counter", "ES_LKAS_State"),
-        ("LKAS_Alert_Msg", "ES_LKAS_State"),
-        ("Signal1", "ES_LKAS_State"),
-        ("LKAS_ACTIVE", "ES_LKAS_State"),
-        ("LKAS_Dash_State", "ES_LKAS_State"),
-        ("Signal2", "ES_LKAS_State"),
-        ("Backward_Speed_Limit_Menu", "ES_LKAS_State"),
-        ("LKAS_Left_Line_Enable", "ES_LKAS_State"),
-        ("LKAS_Left_Line_Light_Blink", "ES_LKAS_State"),
-        ("LKAS_Right_Line_Enable", "ES_LKAS_State"),
-        ("LKAS_Right_Line_Light_Blink", "ES_LKAS_State"),
-        ("LKAS_Left_Line_Visible", "ES_LKAS_State"),
-        ("LKAS_Right_Line_Visible", "ES_LKAS_State"),
-        ("LKAS_Alert", "ES_LKAS_State"),
-        ("Signal3", "ES_LKAS_State"),
+        ("Counter", "ES_LKAS_State", 0),
+        ("LKAS_Alert_Msg", "ES_LKAS_State", 0),
+        ("Signal1", "ES_LKAS_State", 0),
+        ("LKAS_ACTIVE", "ES_LKAS_State", 0),
+        ("LKAS_Dash_State", "ES_LKAS_State", 0),
+        ("Signal2", "ES_LKAS_State", 0),
+        ("Backward_Speed_Limit_Menu", "ES_LKAS_State", 0),
+        ("LKAS_Left_Line_Enable", "ES_LKAS_State", 0),
+        ("LKAS_Left_Line_Light_Blink", "ES_LKAS_State", 0),
+        ("LKAS_Right_Line_Enable", "ES_LKAS_State", 0),
+        ("LKAS_Right_Line_Light_Blink", "ES_LKAS_State", 0),
+        ("LKAS_Left_Line_Visible", "ES_LKAS_State", 0),
+        ("LKAS_Right_Line_Visible", "ES_LKAS_State", 0),
+        ("LKAS_Alert", "ES_LKAS_State", 0),
+        ("Signal3", "ES_LKAS_State", 0),
       ]
-      checks = [
-        ("ES_DashStatus", 10),
-        ("ES_LKAS_State", 10),
-      ]
+      checks = [("ES_DashStatus", 10)]
+      checks.append(("ES_LKAS_State", 10))
 
       if CP.carFingerprint not in [CAR.CROSSTREK_2020H, CAR.OUTBACK, CAR.LEGACY]:
         signals += [
-          ("Counter", "ES_Distance"),
-          ("Signal1", "ES_Distance"),
-          ("Cruise_Fault", "ES_Distance"),
-          ("Cruise_Throttle", "ES_Distance"),
-          ("Signal2", "ES_Distance"),
-          ("Car_Follow", "ES_Distance"),
-          ("Signal3", "ES_Distance"),
-          ("Cruise_Brake_Active", "ES_Distance"),
-          ("Distance_Swap", "ES_Distance"),
-          ("Cruise_EPB", "ES_Distance"),
-          ("Signal4", "ES_Distance"),
-          ("Close_Distance", "ES_Distance"),
-          ("Signal5", "ES_Distance"),
-          ("Cruise_Cancel", "ES_Distance"),
-          ("Cruise_Set", "ES_Distance"),
-          ("Cruise_Resume", "ES_Distance"),
-          ("Signal6", "ES_Distance"),
+          ("Counter", "ES_Distance", 0),
+          ("Signal1", "ES_Distance", 0),
+          ("Cruise_Fault", "ES_Distance", 0),
+          ("Cruise_Throttle", "ES_Distance", 0),
+          ("Signal2", "ES_Distance", 0),
+          ("Car_Follow", "ES_Distance", 0),
+          ("Signal3", "ES_Distance", 0),
+          ("Cruise_Brake_Active", "ES_Distance", 0),
+          ("Distance_Swap", "ES_Distance", 0),
+          ("Cruise_EPB", "ES_Distance", 0),
+          ("Signal4", "ES_Distance", 0),
+          ("Close_Distance", "ES_Distance", 0),
+          ("Signal5", "ES_Distance", 0),
+          ("Cruise_Cancel", "ES_Distance", 0),
+          ("Cruise_Set", "ES_Distance", 0),
+          ("Cruise_Resume", "ES_Distance", 0),
+          ("Signal6", "ES_Distance", 0),
         ]
         checks.append(("ES_Distance", 20))
 

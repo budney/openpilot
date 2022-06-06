@@ -56,7 +56,6 @@ selfdrive/modeld/_dmonitoringmodeld
 /src/
 
 one
-/body/
 openpilot
 notebooks
 xx
@@ -77,7 +76,7 @@ cppcheck_report.txt
 comma*.sh
 
 selfdrive/modeld/thneed/compile
-selfdrive/modeld/models/*.thneed
+models/*.thneed
 
 *.bz2
 

@@ -12,7 +12,9 @@ import argparse
 
 from common.basedir import BASEDIR
 from selfdrive.test.process_replay.compare_logs import save_log
-from tools.lib.logreader import LogReader
+from tools.lib.api import CommaApi
+from tools.lib.auth_config import get_token
+from tools.lib.robust_logreader import RobustLogReader
 from tools.lib.route import Route, SegmentName
 from urllib.parse import urlparse, parse_qs
 
@@ -50,7 +52,7 @@ def load_segment(segment_name):
     return []
 
   try:
-    return list(LogReader(segment_name))
+    return list(RobustLogReader(segment_name))
   except ValueError as e:
     print(f"Error parsing {segment_name}: {e}")
     return []
@@ -73,13 +75,13 @@ def start_juggler(fn=None, dbc=None, layout=None):
   subprocess.call(cmd, shell=True, env=env, cwd=juggle_dir)
 
 
-def juggle_route(route_or_segment_name, segment_count, qlog, can, layout, dbc=None):
+def juggle_route(route_or_segment_name, segment_count, qlog, can, layout):
   segment_start = 0
   if 'cabana' in route_or_segment_name:
     query = parse_qs(urlparse(route_or_segment_name).query)
-    route_or_segment_name = query["route"][0]
-
-  if route_or_segment_name.startswith(("http://", "https://")) or os.path.isfile(route_or_segment_name):
+    api = CommaApi(get_token())
+    logs = api.get(f'v1/route/{query["route"][0]}/log_urls?sig={query["sig"][0]}&exp={query["exp"][0]}')
+  elif route_or_segment_name.startswith("http://") or route_or_segment_name.startswith("https://") or os.path.isfile(route_or_segment_name):
     logs = [route_or_segment_name]
   else:
     route_or_segment_name = SegmentName(route_or_segment_name, allow_route_name=True)
@@ -88,7 +90,7 @@ def juggle_route(route_or_segment_name, segment_count, qlog, can, layout, dbc=No
     if route_or_segment_name.segment_num != -1 and segment_count is None:
       segment_count = 1
 
-    r = Route(route_or_segment_name.route_name.canonical_name, route_or_segment_name.data_dir)
+    r = Route(route_or_segment_name.route_name.canonical_name)
     logs = r.qlog_paths() if qlog else r.log_paths()
 
   segment_end = segment_start + segment_count if segment_count else None
@@ -111,14 +113,14 @@ def juggle_route(route_or_segment_name, segment_count, qlog, can, layout, dbc=No
     all_data = [d for d in all_data if d.which() not in ['can', 'sendcan']]
 
   # Infer DBC name from logs
-  if dbc is None:
-    for cp in [m for m in all_data if m.which() == 'carParams']:
-      try:
-        DBC = __import__(f"selfdrive.car.{cp.carParams.carName}.values", fromlist=['DBC']).DBC
-        dbc = DBC[cp.carParams.carFingerprint]['pt']
-      except Exception:
-        pass
-      break
+  dbc = None
+  for cp in [m for m in all_data if m.which() == 'carParams']:
+    try:
+      DBC = __import__(f"selfdrive.car.{cp.carParams.carName}.values", fromlist=['DBC']).DBC
+      dbc = DBC[cp.carParams.carFingerprint]['pt']
+    except Exception:
+      pass
+    break
 
   with tempfile.NamedTemporaryFile(suffix='.rlog', dir=juggle_dir) as tmp:
     save_log(tmp.name, all_data, compress=False)
@@ -136,7 +138,6 @@ if __name__ == "__main__":
   parser.add_argument("--stream", action="store_true", help="Start PlotJuggler in streaming mode")
   parser.add_argument("--layout", nargs='?', help="Run PlotJuggler with a pre-defined layout")
   parser.add_argument("--install", action="store_true", help="Install or update PlotJuggler + plugins")
-  parser.add_argument("--dbc", help="Set the DBC name to load for parsing CAN data. If not set, the DBC will be automatically inferred from the logs.")
   parser.add_argument("route_or_segment_name", nargs='?', help="The route or segment name to plot (cabana share URL accepted)")
   parser.add_argument("segment_count", type=int, nargs='?', help="The number of segments to plot")
 
@@ -157,4 +158,4 @@ if __name__ == "__main__":
     start_juggler(layout=args.layout)
   else:
     route_or_segment_name = DEMO_ROUTE if args.demo else args.route_or_segment_name.strip()
-    juggle_route(route_or_segment_name, args.segment_count, args.qlog, args.can, args.layout, args.dbc)
+    juggle_route(route_or_segment_name, args.segment_count, args.qlog, args.can, args.layout)

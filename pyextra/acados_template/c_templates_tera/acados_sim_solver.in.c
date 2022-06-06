@@ -164,17 +164,12 @@ int {{ model.name }}_acados_sim_create(sim_solver_capsule * capsule)
 {%- endif %}
 
     {% elif solver_options.integrator_type == "GNSF" -%}
-  {% if model.gnsf.purely_linear != 1 %}
     capsule->sim_gnsf_phi_fun = (external_function_param_casadi *) malloc(sizeof(external_function_param_casadi));
     capsule->sim_gnsf_phi_fun_jac_y = (external_function_param_casadi *) malloc(sizeof(external_function_param_casadi));
     capsule->sim_gnsf_phi_jac_y_uhat = (external_function_param_casadi *) malloc(sizeof(external_function_param_casadi));
-  {% if model.gnsf.nontrivial_f_LO == 1 %}
     capsule->sim_gnsf_f_lo_jac_x1_x1dot_u_z = (external_function_param_casadi *) malloc(sizeof(external_function_param_casadi));
-  {%- endif %}
-  {%- endif %}
     capsule->sim_gnsf_get_matrices_fun = (external_function_param_casadi *) malloc(sizeof(external_function_param_casadi));
 
-  {% if model.gnsf.purely_linear != 1 %}
     capsule->sim_gnsf_phi_fun->casadi_fun = &{{ model.name }}_gnsf_phi_fun;
     capsule->sim_gnsf_phi_fun->casadi_n_in = &{{ model.name }}_gnsf_phi_fun_n_in;
     capsule->sim_gnsf_phi_fun->casadi_n_out = &{{ model.name }}_gnsf_phi_fun_n_out;
@@ -199,7 +194,6 @@ int {{ model.name }}_acados_sim_create(sim_solver_capsule * capsule)
     capsule->sim_gnsf_phi_jac_y_uhat->casadi_work = &{{ model.name }}_gnsf_phi_jac_y_uhat_work;
     external_function_param_casadi_create(capsule->sim_gnsf_phi_jac_y_uhat, np);
 
-  {% if model.gnsf.nontrivial_f_LO == 1 %}
     capsule->sim_gnsf_f_lo_jac_x1_x1dot_u_z->casadi_fun = &{{ model.name }}_gnsf_f_lo_fun_jac_x1k1uz;
     capsule->sim_gnsf_f_lo_jac_x1_x1dot_u_z->casadi_n_in = &{{ model.name }}_gnsf_f_lo_fun_jac_x1k1uz_n_in;
     capsule->sim_gnsf_f_lo_jac_x1_x1dot_u_z->casadi_n_out = &{{ model.name }}_gnsf_f_lo_fun_jac_x1k1uz_n_out;
@@ -207,8 +201,6 @@ int {{ model.name }}_acados_sim_create(sim_solver_capsule * capsule)
     capsule->sim_gnsf_f_lo_jac_x1_x1dot_u_z->casadi_sparsity_out = &{{ model.name }}_gnsf_f_lo_fun_jac_x1k1uz_sparsity_out;
     capsule->sim_gnsf_f_lo_jac_x1_x1dot_u_z->casadi_work = &{{ model.name }}_gnsf_f_lo_fun_jac_x1k1uz_work;
     external_function_param_casadi_create(capsule->sim_gnsf_f_lo_jac_x1_x1dot_u_z, np);
-  {%- endif %}
-  {%- endif %}
 
     capsule->sim_gnsf_get_matrices_fun->casadi_fun = &{{ model.name }}_gnsf_get_matrices_fun;
     capsule->sim_gnsf_get_matrices_fun->casadi_n_in = &{{ model.name }}_gnsf_get_matrices_fun_n_in;
@@ -220,7 +212,7 @@ int {{ model.name }}_acados_sim_create(sim_solver_capsule * capsule)
     {% endif %}
 
     // sim plan & config
-    sim_solver_plan_t plan;
+    sim_solver_plan plan;
     plan.sim_solver = {{ solver_options.integrator_type }};
 
     // create correct config based on plan
@@ -315,18 +307,14 @@ int {{ model.name }}_acados_sim_create(sim_solver_capsule * capsule)
                 "expl_ode_hess", capsule->sim_expl_ode_hess);
 {%- endif %}
 {%- elif solver_options.integrator_type == "GNSF" %}
-  {% if model.gnsf.purely_linear != 1 %}
     {{ model.name }}_sim_config->model_set({{ model.name }}_sim_in->model,
                  "phi_fun", capsule->sim_gnsf_phi_fun);
     {{ model.name }}_sim_config->model_set({{ model.name }}_sim_in->model,
                  "phi_fun_jac_y", capsule->sim_gnsf_phi_fun_jac_y);
     {{ model.name }}_sim_config->model_set({{ model.name }}_sim_in->model,
                  "phi_jac_y_uhat", capsule->sim_gnsf_phi_jac_y_uhat);
-  {% if model.gnsf.nontrivial_f_LO == 1 %}
     {{ model.name }}_sim_config->model_set({{ model.name }}_sim_in->model,
                  "f_lo_jac_x1_x1dot_u_z", capsule->sim_gnsf_f_lo_jac_x1_x1dot_u_z);
-  {%- endif %}
-  {%- endif %}
     {{ model.name }}_sim_config->model_set({{ model.name }}_sim_in->model,
                  "gnsf_get_matrices_fun", capsule->sim_gnsf_get_matrices_fun);
 {%- endif %}
@@ -421,14 +409,10 @@ int {{ model.name }}_acados_sim_free(sim_solver_capsule *capsule)
     external_function_param_casadi_free(capsule->sim_expl_ode_hess);
 {%- endif %}
 {%- elif solver_options.integrator_type == "GNSF" %}
-  {% if model.gnsf.purely_linear != 1 %}
     external_function_param_casadi_free(capsule->sim_gnsf_phi_fun);
     external_function_param_casadi_free(capsule->sim_gnsf_phi_fun_jac_y);
     external_function_param_casadi_free(capsule->sim_gnsf_phi_jac_y_uhat);
-  {% if model.gnsf.nontrivial_f_LO == 1 %}
     external_function_param_casadi_free(capsule->sim_gnsf_f_lo_jac_x1_x1dot_u_z);
-  {%- endif %}
-  {%- endif %}
     external_function_param_casadi_free(capsule->sim_gnsf_get_matrices_fun);
 {% endif %}
 
@@ -461,14 +445,10 @@ int {{ model.name }}_acados_sim_update_params(sim_solver_capsule *capsule, doubl
     capsule->sim_impl_dae_hess[0].set_param(capsule->sim_impl_dae_hess, p);
 {%- endif %}
 {%- elif solver_options.integrator_type == "GNSF" %}
-  {% if model.gnsf.purely_linear != 1 %}
     capsule->sim_gnsf_phi_fun[0].set_param(capsule->sim_gnsf_phi_fun, p);
     capsule->sim_gnsf_phi_fun_jac_y[0].set_param(capsule->sim_gnsf_phi_fun_jac_y, p);
     capsule->sim_gnsf_phi_jac_y_uhat[0].set_param(capsule->sim_gnsf_phi_jac_y_uhat, p);
-  {% if model.gnsf.nontrivial_f_LO == 1 %}
     capsule->sim_gnsf_f_lo_jac_x1_x1dot_u_z[0].set_param(capsule->sim_gnsf_f_lo_jac_x1_x1dot_u_z, p);
-  {%- endif %}
-  {%- endif %}
     capsule->sim_gnsf_get_matrices_fun[0].set_param(capsule->sim_gnsf_get_matrices_fun, p);
 {% endif %}
 

@@ -1,9 +1,4 @@
-from dataclasses import dataclass
-from typing import Dict, List, Optional, Union
-from enum import Enum
-
 from selfdrive.car import dbc_dict
-from selfdrive.car.docs_definitions import CarInfo, Harness
 from cereal import car
 Ecu = car.CarParams.Ecu
 
@@ -15,7 +10,6 @@ class CarControllerParams:
   LKAS_MAX_TORQUE = 1               # A value of 1 is easy to overpower
   STEER_THRESHOLD = 1.0
 
-
 class CAR:
   XTRAIL = "NISSAN X-TRAIL 2017"
   LEAF = "NISSAN LEAF 2018"
@@ -25,20 +19,6 @@ class CAR:
   ROGUE = "NISSAN ROGUE 2019"
   ALTIMA = "NISSAN ALTIMA 2020"
 
-
-@dataclass
-class NissanCarInfo(CarInfo):
-  package: str = "ProPILOT"
-  harness: Enum = Harness.nissan_a
-
-
-CAR_INFO: Dict[str, Optional[Union[NissanCarInfo, List[NissanCarInfo]]]] = {
-  CAR.XTRAIL: NissanCarInfo("Nissan X-Trail 2017"),
-  CAR.LEAF: NissanCarInfo("Nissan Leaf 2018-22"),
-  CAR.LEAF_IC: None,  # same platforms
-  CAR.ROGUE: NissanCarInfo("Nissan Rogue 2018-20"),
-  CAR.ALTIMA: NissanCarInfo("Nissan Altima 2019-20", harness=Harness.nissan_b),
-}
 
 FINGERPRINTS = {
   CAR.XTRAIL: [

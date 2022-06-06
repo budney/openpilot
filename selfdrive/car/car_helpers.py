@@ -1,7 +1,5 @@
 import os
 import time
-from typing import Any, Dict, List
-
 from common.params import Params
 from common.basedir import BASEDIR
 from selfdrive.version import is_comma_remote, is_tested_branch
@@ -60,25 +58,19 @@ def load_interfaces(brand_names):
   return ret
 
 
-def get_interface_attr(attr: str) -> Dict[str, Any]:
-  # returns given attribute from each interface
+def _get_interface_names():
+  # read all the folders in selfdrive/car and return a dict where:
+  # - keys are all the car names that which we have an interface for
+  # - values are lists of spefic car models for a given car
   brand_names = {}
-  for car_folder in sorted([x[0] for x in os.walk(BASEDIR + '/selfdrive/car')]):
+  for car_folder in [x[0] for x in os.walk(BASEDIR + '/selfdrive/car')]:
     try:
       brand_name = car_folder.split('/')[-1]
-      attr_data = getattr(__import__(f'selfdrive.car.{brand_name}.values', fromlist=[attr]), attr, None)
-      brand_names[brand_name] = attr_data
+      model_names = __import__(f'selfdrive.car.{brand_name}.values', fromlist=['CAR']).CAR
+      model_names = [getattr(model_names, c) for c in model_names.__dict__.keys() if not c.startswith("__")]
+      brand_names[brand_name] = model_names
     except (ImportError, OSError):
       pass
-  return brand_names
-
-
-def _get_interface_names() -> Dict[str, List[str]]:
-  # returns a dict of brand name and its respective models
-  brand_names = {}
-  for brand_name, model_names in get_interface_attr("CAR").items():
-    model_names = [getattr(model_names, c) for c in model_names.__dict__.keys() if not c.startswith("__")]
-    brand_names[brand_name] = model_names
 
   return brand_names
 
@@ -112,7 +104,7 @@ def fingerprint(logcan, sendcan):
       if Params().get_bool("FirmwareQueryDelay"):
         time.sleep(10)
       _, vin = get_vin(logcan, sendcan, bus)
-      car_fw = get_fw_versions(logcan, sendcan)
+      car_fw = get_fw_versions(logcan, sendcan, bus)
 
     exact_fw_match, fw_candidates = match_fw_to_car(car_fw)
   else:
@@ -184,13 +176,11 @@ def get_car(logcan, sendcan):
     cloudlog.warning("car doesn't match any fingerprints: %r", fingerprints)
     candidate = "mock"
 
-  disable_radar = Params().get_bool("DisableRadar")
-
   CarInterface, CarController, CarState = interfaces[candidate]
-  CP = CarInterface.get_params(candidate, fingerprints, car_fw, disable_radar)
-  CP.carVin = vin
-  CP.carFw = car_fw
-  CP.fingerprintSource = source
-  CP.fuzzyFingerprint = not exact_match
+  car_params = CarInterface.get_params(candidate, fingerprints, car_fw)
+  car_params.carVin = vin
+  car_params.carFw = car_fw
+  car_params.fingerprintSource = source
+  car_params.fuzzyFingerprint = not exact_match
 
-  return CarInterface(CP, CarController, CarState), CP
+  return CarInterface(car_params, CarController, CarState), car_params

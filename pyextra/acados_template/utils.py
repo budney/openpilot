@@ -1,4 +1,3 @@
-# -*- coding: future_fstrings -*-
 #
 # Copyright 2019 Gianluca Frison, Dimitris Kouzoupis, Robin Verschueren,
 # Andrea Zanelli, Niels van Duijkeren, Jonathan Frey, Tommaso Sartor,
@@ -50,7 +49,7 @@ def get_acados_path():
         ACADOS_PATH = os.path.realpath(acados_path)
         msg = 'Warning: Did not find environment variable ACADOS_SOURCE_DIR, '
         msg += 'guessed ACADOS_PATH to be {}.\n'.format(ACADOS_PATH)
-        msg += 'Please export ACADOS_SOURCE_DIR to avoid this warning.'
+        msg += 'Please export ACADOS_SOURCE_DIR to not avoid this warning.'
         print(msg)
     return ACADOS_PATH
 
@@ -75,7 +74,7 @@ def get_tera_exec_path():
 platform2tera = {
     "linux": "linux",
     "darwin": "osx",
-    "win32": "windows"
+    "win32": "window.exe"
 }
 
 
@@ -213,14 +212,16 @@ def render_template(in_file, out_file, template_dir, json_path):
     template_glob = os.path.join(acados_path, 'c_templates_tera', '*')
 
     # call tera as system cmd
-    os_cmd = f"{tera_path} '{template_glob}' '{in_file}' '{json_path}' '{out_file}'"
-    # Windows cmd.exe can not cope with '...', so use "..." instead:
-    if os.name == 'nt':
-        os_cmd = os_cmd.replace('\'', '\"')
-
+    os_cmd = "{tera_path} '{template_glob}' '{in_file}' '{json_path}' '{out_file}'".format(
+        tera_path=tera_path,
+        template_glob=template_glob,
+        json_path=json_path,
+        in_file=in_file,
+        out_file=out_file
+    )
     status = os.system(os_cmd)
     if (status != 0):
-        raise Exception(f'Rendering of {in_file} failed!\n\nAttempted to execute OS command:\n{os_cmd}\n\nExiting.\n')
+        raise Exception('Rendering of {} failed!\n\nAttempted to execute OS command:\n{}\n\nExiting.\n'.format(in_file, os_cmd))
 
     os.chdir(cwd)
 
@@ -234,13 +235,31 @@ def np_array_to_list(np_array):
     elif isinstance(np_array, (DM)):
         return np_array.full()
     else:
-        raise(Exception(f"Cannot convert to list type {type(np_array)}"))
+        raise(Exception(
+            "Cannot convert to list type {}".format(type(np_array))
+        ))
 
 
 def format_class_dict(d):
     """
     removes the __ artifact from class to dict conversion
     """
+    out = {}
+    for k, v in d.items():
+        if isinstance(v, dict):
+            v = format_class_dict(v)
+
+        out_key = k.split('__', 1)[-1]
+        out[k.replace(k, out_key)] = v
+    return out
+
+
+def acados_class2dict(class_instance):
+    """
+    removes the __ artifact from class to dict conversion
+    """
+
+    d = dict(class_instance.__dict__)
     out = {}
     for k, v in d.items():
         if isinstance(v, dict):
@@ -413,13 +432,6 @@ def set_up_imported_gnsf_model(acados_formulation):
     acados_formulation.model.phi_fun_jac_y = phi_fun_jac_y
     acados_formulation.model.phi_jac_y_uhat = phi_jac_y_uhat
     acados_formulation.model.get_matrices_fun = get_matrices_fun
-
-    # get_matrices_fun = Function([model_name,'_gnsf_get_matrices_fun'], {dummy},...
-    #  {A, B, C, E, L_x, L_xdot, L_z, L_u, A_LO, c, E_LO, B_LO,...
-    #   nontrivial_f_LO, purely_linear, ipiv_x, ipiv_z, c_LO});
-    get_matrices_out = get_matrices_fun(0)
-    acados_formulation.model.gnsf['nontrivial_f_LO'] = int(get_matrices_out[12])
-    acados_formulation.model.gnsf['purely_linear'] = int(get_matrices_out[13])
 
     if "f_lo_fun_jac_x1k1uz" in gnsf:
         f_lo_fun_jac_x1k1uz = Function.deserialize(gnsf['f_lo_fun_jac_x1k1uz'])

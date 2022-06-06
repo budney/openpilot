@@ -1,7 +1,6 @@
 import copy
 import crcmod
-
-from common.conversions import Conversions as CV
+from selfdrive.config import Conversions as CV
 from selfdrive.car.tesla.values import CANBUS, CarControllerParams
 
 
@@ -51,7 +50,7 @@ class TeslaCAN:
       "DAS_jerkMax": CarControllerParams.JERK_LIMIT_MAX,
       "DAS_accelMin": min_accel,
       "DAS_accelMax": max_accel,
-      "DAS_controlCounter": cnt,
+      "DAS_controlCounter": (cnt % 8),
       "DAS_controlChecksum": 0,
     }
 

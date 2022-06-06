@@ -86,7 +86,7 @@ modeld
 common
 ^^^^^^
 .. autodoxygenindex::
-   :project: common
+   :project: selfdrive_common
 
 sensorsd
 ^^^^^^^^

@@ -24,7 +24,7 @@ by generating a rotation matrix and multiplying.
 
 
 
-Orientation Conventions
+Orientation Conventations
 ------
 Quaternions, rotation matrices and euler angles are three
 equivalent representations of orientation and all three are

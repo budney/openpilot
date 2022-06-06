@@ -1,4 +1,5 @@
 #!/bin/bash
+
 set -e
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
@@ -44,11 +45,10 @@ echo "pip packages install..."
 pipenv install --dev --deploy --clear
 pyenv rehash
 
-echo "pre-commit hooks install..."
-shopt -s nullglob
-for f in .pre-commit-config.yaml */.pre-commit-config.yaml; do
-  cd $DIR/$(dirname $f)
-  if [ -e ".git" ]; then
-    $RUN pre-commit install
-  fi
-done
+if [ -f "$DIR/.pre-commit-config.yaml" ]; then
+  echo "precommit install ..."
+  $RUN pre-commit install
+  [ -d "./xx" ] && (cd xx && $RUN pre-commit install)
+  [ -d "./notebooks" ] && (cd notebooks && $RUN pre-commit install)
+  echo "pre-commit hooks installed"
+fi

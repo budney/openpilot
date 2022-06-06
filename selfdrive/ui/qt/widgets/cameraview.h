@@ -8,6 +8,7 @@
 #include <QThread>
 #include "cereal/visionipc/visionipc_client.h"
 #include "selfdrive/camerad/cameras/camera_common.h"
+#include "selfdrive/common/visionimg.h"
 #include "selfdrive/ui/ui.h"
 
 class CameraViewWidget : public QOpenGLWidget, protected QOpenGLFunctions {
@@ -35,10 +36,20 @@ protected:
   virtual void updateFrameMat(int w, int h);
   void vipcThread();
 
+  struct WaitFence {
+    WaitFence() { sync = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0); }
+    ~WaitFence() { glDeleteSync(sync); }
+    void wait() { glWaitSync(sync, 0, GL_TIMEOUT_IGNORED); }
+    GLsync sync = 0;
+  };
+
   bool zoomed_view;
-  VisionBuf *latest_frame = nullptr;
+  std::mutex lock;
+  int latest_texture_id = -1;
   GLuint frame_vao, frame_vbo, frame_ibo;
   mat4 frame_mat;
+  std::unique_ptr<EGLImageTexture> texture[UI_BUF_COUNT];
+  std::unique_ptr<WaitFence> wait_fence;
   std::unique_ptr<QOpenGLShaderProgram> program;
   QColor bg = QColor("#000000");
 
@@ -48,9 +59,6 @@ protected:
   std::atomic<VisionStreamType> stream_type;
   QThread *vipc_thread = nullptr;
 
-  GLuint textures[3];
-
 protected slots:
   void vipcConnected(VisionIpcClient *vipc_client);
-  void vipcFrameReceived(VisionBuf *vipc_client);
 };

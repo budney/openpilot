@@ -5,8 +5,8 @@
 
 #include <capnp/dynamic.h>
 #include "cereal/services.h"
-#include "common/params.h"
-#include "common/timing.h"
+#include "selfdrive/common/params.h"
+#include "selfdrive/common/timing.h"
 #include "selfdrive/hardware/hw.h"
 #include "selfdrive/ui/replay/util.h"
 
@@ -275,10 +275,7 @@ void Replay::startStream(const Segment *cur_segment) {
   it = std::find_if(events.begin(), events.end(), [](auto e) { return e->which == cereal::Event::Which::CAR_PARAMS; });
   if (it != events.end()) {
     car_fingerprint_ = (*it)->event.getCarParams().getCarFingerprint();
-    capnp::MallocMessageBuilder builder;
-    builder.setRoot((*it)->event.getCarParams());
-    auto words = capnp::messageToFlatArray(builder);
-    auto bytes = words.asBytes();
+    auto bytes = (*it)->bytes();
     Params().put("CarParams", (const char *)bytes.begin(), bytes.size());
   } else {
     rWarning("failed to read CarParams from current segment");
@@ -292,7 +289,7 @@ void Replay::startStream(const Segment *cur_segment) {
         camera_size[type] = {fr->width, fr->height};
       }
     }
-    camera_server_ = std::make_unique<CameraServer>(camera_size);
+    camera_server_ = std::make_unique<CameraServer>(camera_size, hasFlag(REPLAY_FLAG_SEND_YUV));
   }
 
   // start stream thread
@@ -386,7 +383,7 @@ void Replay::stream() {
           publishMessage(evt);
         } else if (camera_server_) {
           if (hasFlag(REPLAY_FLAG_FULL_SPEED)) {
-            camera_server_->waitForSent();
+            camera_server_->waitFinish();
           }
           publishFrame(evt);
         }
@@ -394,7 +391,7 @@ void Replay::stream() {
     }
     // wait for frame to be sent before unlock.(frameReader may be deleted after unlock)
     if (camera_server_) {
-      camera_server_->waitForSent();
+      camera_server_->waitFinish();
     }
 
     if (eit == events_->end() && !hasFlag(REPLAY_FLAG_NO_LOOP)) {
