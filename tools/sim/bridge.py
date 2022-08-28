@@ -36,6 +36,7 @@ def parse_args(add_args=None):
   parser = argparse.ArgumentParser(description='Bridge between CARLA and openpilot.')
   parser.add_argument('--joystick', action='store_true')
   parser.add_argument('--high_quality', action='store_true')
+  parser.add_argument('--dual_camera', action='store_true')
   parser.add_argument('--town', type=str, default='Town04_Opt')
   parser.add_argument('--spawn_point', dest='num_selected_spawn_point', type=int, default=16)
 
@@ -80,7 +81,7 @@ class Camerad:
     cl_arg = f" -DHEIGHT={H} -DWIDTH={W} -DRGB_STRIDE={W * 3} -DUV_WIDTH={W // 2} -DUV_HEIGHT={H // 2} -DRGB_SIZE={W * H} -DCL_DEBUG "
 
     # TODO: move rgb_to_yuv.cl to local dir once the frame stream camera is removed
-    kernel_fn = os.path.join(BASEDIR, "selfdrive", "camerad", "transforms", "rgb_to_yuv.cl")
+    kernel_fn = os.path.join(BASEDIR, "system", "camerad", "transforms", "rgb_to_yuv.cl")
     with open(kernel_fn) as f:
       prg = cl.Program(self.ctx, f.read()).build(cl_arg)
       self.krnl = prg.rgb_to_yuv
@@ -112,7 +113,7 @@ class Camerad:
 
     dat = messaging.new_message(pub_type)
     msg = {
-      "frameId": image.frame,
+      "frameId": frame_id,
       "transform": [1.0, 0.0, 0.0,
                     0.0, 1.0, 0.0,
                     0.0, 0.0, 1.0]
@@ -178,7 +179,7 @@ def gps_callback(gps, vehicle_state):
   ]
 
   dat.gpsLocationExternal = {
-    "timestamp": int(time.time() * 1000),
+    "unixTimestampMillis": int(time.time() * 1000),
     "flags": 1,  # valid fix
     "accuracy": 1.0,
     "verticalAccuracy": 1.0,
@@ -197,12 +198,12 @@ def gps_callback(gps, vehicle_state):
 
 
 def fake_driver_monitoring(exit_event: threading.Event):
-  pm = messaging.PubMaster(['driverState', 'driverMonitoringState'])
+  pm = messaging.PubMaster(['driverStateV2', 'driverMonitoringState'])
   while not exit_event.is_set():
     # dmonitoringmodeld output
-    dat = messaging.new_message('driverState')
-    dat.driverState.faceProb = 1.0
-    pm.send('driverState', dat)
+    dat = messaging.new_message('driverStateV2')
+    dat.driverStateV2.leftDriverData.faceProb = 1.0
+    pm.send('driverStateV2', dat)
 
     # dmonitoringd output
     dat = messaging.new_message('driverMonitoringState')
@@ -239,6 +240,7 @@ class CarlaBridge:
     msg.liveCalibration.validBlocks = 20
     msg.liveCalibration.rpyCalib = [0.0, 0.0, 0.0]
     Params().put("CalibrationParams", msg.to_bytes())
+    Params().put_bool("WideCameraOnly", not arguments.dual_camera)
 
     self._args = arguments
     self._carla_objects = []
@@ -302,6 +304,7 @@ class CarlaBridge:
     world_map = world.get_map()
 
     vehicle_bp = blueprint_library.filter('vehicle.tesla.*')[1]
+    vehicle_bp.set_attribute('role_name', 'hero')
     spawn_points = world_map.get_spawn_points()
     assert len(spawn_points) > self._args.num_selected_spawn_point, f'''No spawn point {self._args.num_selected_spawn_point}, try a value between 0 and
       {len(spawn_points)} for this town.'''
@@ -333,10 +336,13 @@ class CarlaBridge:
       return camera
 
     self._camerad = Camerad()
-    road_camera = create_camera(fov=40, callback=self._camerad.cam_callback_road)
-    road_wide_camera = create_camera(fov=120, callback=self._camerad.cam_callback_wide_road)  # fov bigger than 120 shows unwanted artifacts
 
-    self._carla_objects.extend([road_camera, road_wide_camera])
+    if self._args.dual_camera:
+      road_camera = create_camera(fov=40, callback=self._camerad.cam_callback_road)
+      self._carla_objects.append(road_camera)
+
+    road_wide_camera = create_camera(fov=120, callback=self._camerad.cam_callback_wide_road)  # fov bigger than 120 shows unwanted artifacts
+    self._carla_objects.append(road_wide_camera)
 
     vehicle_state = VehicleState()
 
@@ -504,6 +510,7 @@ class CarlaBridge:
   def close(self):
     self.started = False
     self._exit_event.set()
+
     for s in self._carla_objects:
       try:
         s.destroy()
@@ -522,17 +529,23 @@ if __name__ == "__main__":
   q: Any = Queue()
   args = parse_args()
 
-  carla_bridge = CarlaBridge(args)
-  p = carla_bridge.run(q)
+  try:
+    carla_bridge = CarlaBridge(args)
+    p = carla_bridge.run(q)
 
-  if args.joystick:
-    # start input poll for joystick
-    from tools.sim.lib.manual_ctrl import wheel_poll_thread
+    if args.joystick:
+      # start input poll for joystick
+      from tools.sim.lib.manual_ctrl import wheel_poll_thread
 
-    wheel_poll_thread(q)
-  else:
-    # start input poll for keyboard
-    from tools.sim.lib.keyboard_ctrl import keyboard_poll_thread
+      wheel_poll_thread(q)
+    else:
+      # start input poll for keyboard
+      from tools.sim.lib.keyboard_ctrl import keyboard_poll_thread
 
-    keyboard_poll_thread(q)
-  p.join()
+      keyboard_poll_thread(q)
+    p.join()
+
+  finally:
+    # Try cleaning up the wide camera param
+    # in case users want to use replay after
+    Params().remove("WideCameraOnly")
