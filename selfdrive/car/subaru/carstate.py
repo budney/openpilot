@@ -13,6 +13,9 @@ class CarState(CarStateBase):
     can_define = CANDefine(DBC[CP.carFingerprint]["pt"])
     self.shifter_values = can_define.dv["Transmission"]["Gear"]
 
+    params = Params()
+    self.has_epb = params.get("ManualParkingBrakeSNGToggle", encoding='utf8') == "0"
+
   def update(self, cp, cp_cam, cp_body):
     ret = car.CarState.new_message()
 
