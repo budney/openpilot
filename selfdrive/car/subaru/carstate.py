@@ -2,6 +2,7 @@ import copy
 from cereal import car
 from opendbc.can.can_define import CANDefine
 from common.conversions import Conversions as CV
+from common.params import Params
 from selfdrive.car.interfaces import CarStateBase
 from opendbc.can.parser import CANParser
 from selfdrive.car.subaru.values import DBC, CAR, GLOBAL_GEN2, PREGLOBAL_CARS
