@@ -67,12 +67,6 @@ TogglesPanel::TogglesPanel(SettingsWindow *parent) : ListWidget(parent) {
       "../assets/offroad/icon_metric.png",
     },
     {
-      "ManualParkingBrakeSNGToggle",
-      tr("Subaru Manual PB Stop and Go"),
-      tr("Experimental feature to enable stop and go for Subaru Global models with manual handbrake. Models with electric parking brake should keep this disabled."),
-      "../assets/offroad/icon_speed_limit.png",
-    },
-    {
       "NavSettingLeftSide",
       tr("Show Map on Left Side of UI"),
       tr("Show map on left side when in split screen view."),
