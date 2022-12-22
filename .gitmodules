@@ -14,8 +14,8 @@
 	path = rednose_repo
 	url = ../../budney/rednose.git
 [submodule "tinygrad_repo"]
-	path = tinygrad_repo
-	url = https://github.com/geohot/tinygrad.git
+    path = tinygrad_repo
+    url = https://github.com/geohot/tinygrad.git
 [submodule "body"]
-	path = body
-	url = https://github.com/budney/body.git
+    path = body
+    url = https://github.com/budney/body.git

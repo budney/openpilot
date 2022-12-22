@@ -1,3 +1,159 @@
+2022-12-06
+==========
+* FPv2 updates
+  * 2022 Impreza / @Frob
+  * 2019 Legacy / @jwithing
+  * 2020 Levorg / @lonelyju
+
+2022-11-29
+==========
+* FPv2 updates
+  * 2023 Crosstrek Limited / @JWynegar
+
+2022-11-27
+==========
+* FPv2 updates
+  * 2022 Forester Wilderness / @FutureGhost
+
+2022-11-18
+==========
+* FPv2 updates
+  * 2022 Outback Wilderness / @valtou
+
+2022-11-16
+==========
+* openpilot 0.9.0
+  * New driving model
+    * Internal feature space information content increased tenfold during training to ~700 bits, which makes the model dramatically more accurate
+    * Less reliance on previous frames makes model more reactive and snappy
+    * Trained in new reprojective simulator
+    * Trained in 36 hours from scratch, compared to one week for previous releases
+    * Training now simulates both lateral and longitudinal behavior, which allows openpilot to slow down for turns, stop at traffic lights, and more in experimental mode
+  * Experimental driving mode
+    * End-to-end longitudinal control
+    * Stops for traffic lights and stop signs
+    * Slows down for turns
+    * openpilot defaults to chill mode, enable experimental mode in settings
+  * Driver monitoring updates
+    * New bigger model with added end-to-end distracted trigger
+    * Reduced false positives during driver calibration
+  * Self-tuning torque controller: learns parameters live for each car
+  * Torque controller used on all Toyota, Lexus, Hyundai, Kia, and Genesis models
+  * UI updates
+    * Matched speeds shown on car's dash
+    * Multi-language in navigation
+    * Improved update experience
+    * Border turns grey while overriding steering
+    * Bookmark events while driving; view them in comma connect
+    * New onroad visualization for experimental mode
+  * tools: new and improved cabana thanks to deanlee!
+  * Experimental longitudinal support for Volkswagen, CAN-FD Hyundai, and new GM models
+  * Genesis GV70 2022-23 support thanks to zunichky and sunnyhaibin!
+  * Hyundai Santa Cruz 2021-22 support thanks to sunnyhaibin!
+  * Kia Sportage 2023 support thanks to sunnyhaibin!
+  * Kia Sportage Hybrid 2023 support thanks to sunnyhaibin!
+  * Kia Stinger 2022 support thanks to sunnyhaibin!
+
+2022-10-15
+==========
+* FPv2 updates
+  * Forester 2018 / @ganny
+
+2022-09-09
+==========
+* openpilot 0.8.16
+  * New driving model
+    * Reduced turn cutting
+  * Auto-detect right hand drive setting with driver monitoring model
+  * Improved fan controller for comma three
+  * New translations
+    * Japanese thanks to cydia2020!
+    * Brazilian Portuguese thanks to AlexandreSato!
+  * Chevrolet Bolt EUV 2022-23 support thanks to JasonJShuler!
+  * Chevrolet Silverado 1500 2020-21 support thanks to JasonJShuler!
+  * GMC Sierra 1500 2020-21 support thanks to JasonJShuler!
+  * Hyundai Ioniq 5 2022 support thanks to sunnyhaibin!
+  * Hyundai Kona Electric 2022 support thanks to sunnyhaibin!
+  * Hyundai Tucson Hybrid 2022 support thanks to sunnyhaibin!
+  * Subaru Legacy 2020-22 support thanks to martinl!
+  * Subaru Outback 2020-22 support
+
+* refactored panda safety to align with upstream / @martinl
+  * Subaru Forester Hybrid
+  * Subaru Crosstrek Hybrid
+
+2022-08-14
+==========
+* FPv2 updates
+  * 2021 Forester / @meeeeeeeeeee
+
+2022-07-20
+==========
+* openpilot 0.8.15
+  * New driving model
+    * Path planning uses end-to-end output instead of lane lines at all times
+    * Reduced ping pong
+    * Improved lane centering
+  * New lateral controller based on physical wheel torque model
+    * Much smoother control that's consistent across the speed range
+    * Effective feedforward that uses road roll
+    * Simplified tuning, all car-specific parameters can be derived from data
+    * Used on select Toyota and Hyundai models at first
+    * Significantly improved control on TSS-P Prius
+  * New driver monitoring model
+    * Bigger model, covering full interior view from driver camera
+    * Works with a wider variety of mounting angles
+    * 3x more unique comma three training data than previous
+  * Navigation improvements
+    * Speed limits shown while navigating
+    * Faster position fix by using raw GPS measurements
+  * UI updates
+    * Multilanguage support for settings and home screen
+    * New font
+    * Refreshed max speed design
+    * More consistent camera view perspective across cars
+  * Reduced power usage: device runs cooler and fan spins less
+  * AGNOS 5
+    * Support VSCode remote SSH target
+    * Support for delta updates to reduce data usage on future OS updates
+  * Chrysler ECU firmware fingerprinting thanks to realfast!
+  * Honda Civic 2022 support
+  * Hyundai Tucson 2021 support thanks to bluesforte!
+  * Kia EV6 2022 support
+  * Lexus NX Hybrid 2020 support thanks to AlexandreSato!
+  * Ram 1500 2019-21 support thanks to realfast!
+
+2022-07-05
+==========
+* Initial lateral torque control support for all subaru-community supported models / @martinl
+
+2022-06-15
+==========
+* 2020 Forester Hybrid support / @martinl
+
+2022-06-07
+==========
+* openpilot 0.8.14
+  * New driving model
+    * Bigger model, using both of comma three's road-facing cameras
+    * Better at cut-in detection and tight turns
+  * New driver monitoring model
+    * Tweaked network structure to improve output resolution for DSP
+    * Fixed bug in quantization aware training to reduce quantizing errors
+    * Resulted in 7x less MSE and no more random biases at runtime
+  * Added toggle to disable disengaging on the accelerator pedal
+  * comma body support
+  * Audi RS3 support thanks to jyoung8607!
+  * Hyundai Ioniq Plug-in Hybrid 2019 support thanks to sunnyhaibin!
+  * Hyundai Tucson Diesel 2019 support thanks to sunnyhaibin!
+  * Toyota Alphard Hybrid 2021 support
+  * Toyota Avalon Hybrid 2022 support
+  * Toyota RAV4 2022 support
+  * Toyota RAV4 Hybrid 2022 support
+* FPv2 updates
+  * 2020 Subaru Outback 2.5i Touring / @CheckYourSix
+  * 2020 Impreza / @R0B
+
 2022-05-18
 ==========
 * FPv2 updates

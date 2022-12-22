@@ -7,9 +7,10 @@ from tqdm import tqdm
 
 import panda.python.uds as uds
 from cereal import car
-from selfdrive.car.fingerprints import get_attr_from_cars
+from selfdrive.car.fingerprints import get_interface_attr
 from selfdrive.car.isotp_parallel_query import IsoTpParallelQuery
-from selfdrive.swaglog import cloudlog
+from system.swaglog import cloudlog
+from common.params import Params
 
 Ecu = car.CarParams.Ecu
 
@@ -68,7 +69,7 @@ def get_ecu_list(logcan, sendcan, bus, extra=None, timeout=0.1, debug=False, pro
   addrs = []
   parallel_addrs = []
 
-  versions = get_attr_from_cars('FW_VERSIONS', combine_brands=False)
+  versions = get_interface_attr('FW_VERSIONS', ignore_none=True)
   if extra is not None:
     versions.update(extra)
 
@@ -147,17 +148,15 @@ if __name__ == "__main__":
 
   t = time.time()
   print("Getting vin...")
-  addr, vin = get_vin(logcan, sendcan, 1, retry=10, debug=args.debug)
-  print(f"VIN: {vin}")
-  print("Getting VIN took %.3f s" % (time.time() - t))
+  vin_rx_addr, vin = get_vin(logcan, sendcan, 1, retry=10, debug=args.debug)
+  print(f'RX: {hex(vin_rx_addr)}, VIN: {vin}')
+  print(f"Getting VIN took {time.time() - t:.3f} s")
   print()
 
-  for subaru_vin in ('JF1', 'JF2', '4S3', '4S4'):
-    if vin.startswith(subaru_vin):
-      time.sleep(10.)
-      break
-
   t = time.time()
+
+  if Params().get_bool("FirmwareQueryDelay"):
+    time.sleep(10.)
   ecu_list = get_ecu_list(logcan, sendcan, 1, extra=extra, debug=args.debug, progress=True)
 
   print()

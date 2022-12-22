@@ -1,1 +1,3 @@
 fakedata/
+!fakedata/*.bz2
+debayer_diff.txt
